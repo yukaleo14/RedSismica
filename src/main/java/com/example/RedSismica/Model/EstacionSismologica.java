@@ -1,5 +1,7 @@
 package com.example.RedSismica.Model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,11 +19,18 @@ import lombok.Setter;
 public class EstacionSismologica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String codigo;
+    private Long codigoEstacion;
     private String nombre;
     private Double latitud;
     private Double longitud;
-    private Double elevacion;
+    private LocalDateTime fechaSolicitudCertificacion;
+    private String nroCerificacionAdquisicion;
+
+
+    public Long getCodigoEstacion() {
+        return codigoEstacion;
+    }
+    public String getNombre() {
+        return nombre;
+    }
 }
