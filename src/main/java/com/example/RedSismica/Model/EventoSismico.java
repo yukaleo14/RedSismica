@@ -19,6 +19,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EventoSismico {
     
+    public static final String esAutoDetectado = null;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,6 +39,40 @@ public class EventoSismico {
     private EstadoEvento estadoEvento;
 
     //Getter
+    public Long getId() {
+        return id;
+    }
+    public LocalDateTime getFechaHoraOcurrencia() {
+        return fechaHoraOcurrencia;
+    }
+    public LocalDateTime getFechaHoraFin() {
+        return fechaHoraFin;
+    }
+    public Double getLatitudHipocentro() {
+        return latitudHipocentro;
+    }
+    public Double getLatitudEpicentro() {
+        return latitudEpicentro;
+    }
+    public Double getLongitudEpicentro() {
+        return longitudEpicentro;
+    }
+    public Double getLongitudHipocentro() {
+        return longitudHipocentro;
+    }
+    public Double getMagnitud() {
+        return magnitud;
+    }
+    public String getAlcance() {
+        return alcance;
+    }
+    public String getOrigenGeneracion() {
+        return origenGeneracion;
+    }
+    public EstadoEvento getEstadoEvento() {
+        return estadoEvento;
+    }
+
    
     public void esPendRevision() {
         this.estadoEvento.esPendRevision();
@@ -45,7 +81,7 @@ public class EventoSismico {
     public void esAutoDetectado() {
         this.estadoEvento.esAutoDetectado();
     }
-
+ 
 
 }
 

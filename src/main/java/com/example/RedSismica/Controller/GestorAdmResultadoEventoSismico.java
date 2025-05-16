@@ -40,19 +40,24 @@ public class GestorAdmResultadoEventoSismico {
         // Lógica para buscar eventos sísmicos automáticamente
         // Normalmente esto se haría con una conexión a base de datos
         // Aquí devolvemos una lista simulada para el ejemplo
-        return eventosSismicos;
-    }
-    
-    public List<EventoSismico> OrdenarEventosPorFechaHora() {
-        // Ordena los eventos por fecha y hora (más recientes primero)
-        List<EventoSismico> eventosOrdenados = new ArrayList<>(eventosSismicos);
-        Collections.sort(eventosOrdenados, new Comparator<EventoSismico>() {
+        List<EventoSismico> eventosSismicos = new ArrayList<>();
+        //listar eventos sismicos auto detectados y pendientes de revision, tomar sus datos principales usando el método getDatosPrincipales() 
+        //, ademas se debe tomar los datos como latitud y longitud del hipocentro y epicentro como su magnitud
+        for (EventoSismico evento : eventosSismicos) {
+            if (evento.getEstadoEvento().esAutoDetectado() || evento.getEstadoEvento().esPendRevision()) {
+                eventosSismicos.add(evento);
+            }
+            
+        }
+        //la lista de eventos sismicos se ordena por fecha y hora de ocurrencia
+        Collections.sort(eventosSismicos, new Comparator<EventoSismico>() {
             @Override
             public int compare(EventoSismico e1, EventoSismico e2) {
-                return e2.getFechaHora().compareTo(e1.getFechaHora());
+                return e1.getFechaHoraOcurrencia().compareTo(e2.getFechaHoraOcurrencia());
             }
         });
-        return eventosOrdenados;
+        return eventosSismicos;
+
     }
     
     public void TomarSeleccionEventoSismico(EventoSismico evento) {
@@ -61,12 +66,15 @@ public class GestorAdmResultadoEventoSismico {
         BuscarEstadoBloqueado();
         BuscarDatosSismicos();
     }
-    
+    //buscamos entre todos los estados de la clase estado evento cuales son ambito evento sismico para luego preguntar cual es bloqueado en peticion
     public boolean BuscarEstadoBloqueado() {
         // Verifica si el evento seleccionado está bloqueado
         if (eventoSeleccionado != null) {
-            eventoBloqueado = eventoSeleccionado.getEstado().equals(Estado.BLOQUEADO);
-            return eventoBloqueado;
+            estadoBloqueado = eventoSeleccionado.getEstadoEvento();
+            if (estadoBloqueado.esBloqueadoEnPeticion()) {
+                eventoBloqueado = true;
+                return true;
+            }
         }
         return false;
     }
@@ -77,10 +85,11 @@ public class GestorAdmResultadoEventoSismico {
         return fechaHoraActual;
     }
     
+    
     public Empleado BuscarEmpleadoLogueado() {
-        // Obtiene el empleado actualmente logueado
+        // Busca el empleado logueado en la sesión actual
         if (sesionActual != null) {
-            return sesionActual.getEmpleado();
+            return sesionActual.obtenerUsuarioLogueado();
         }
         return null;
     }

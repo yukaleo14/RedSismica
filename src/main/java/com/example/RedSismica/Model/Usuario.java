@@ -20,5 +20,10 @@ public class Usuario {
     private Long id;
 
     private String nombre;
+
+    public String getEmpleadoLogueado(){
+        // Simulación de un empleado logueado
+        return "Empleado Logueado: " + nombre;
+    }
     
 }

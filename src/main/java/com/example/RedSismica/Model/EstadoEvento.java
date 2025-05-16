@@ -1,5 +1,7 @@
 package com.example.RedSismica.Model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +18,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EstadoEvento {
     
+    public static LocalDateTime esAutodetectado;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,36 +27,36 @@ public class EstadoEvento {
     private String ambito;
     private String nombre;
 
-    public String esAutoDetectado() {
+    public boolean esAutoDetectado() {
         if (nombre.equals("AutoDetectado")) {
-            return "El evento es auto detectado";
+            return true;
         } else {
-            return "El evento no es auto detectado";
+            return false;
         }
     }
 
-    public String esPendRevision() {
+    public boolean esPendRevision() {
         if (nombre.equals("PendienteRevision")) {
-            return "El evento es pendiente de revision";
+            return true;
         } else {
-            return "El evento no es pendiente de revision";
+            return false;
+        }
+    }
+    //verificamos si el estado es ambito de evento sismico
+    public boolean esAmbitoEventoSismico() {
+        if (ambito.equals("EventoSismico")) {
+            return true;
+        } else {
+            return false;
         }
     }
 
-    public String esAmbitoEventoSismico() {
-        if ("EventoSismico".equals(ambito)) {
-            return "El evento es de ambito evento sismic";
-        } else {
-            return "El evento no es de ambito evento sismic";
-        }
-    }
 
-
-    public String esBloqueadoEnPeticion() {
+    public boolean esBloqueadoEnPeticion() {
         if (nombre.equals("BloqueadoEnPeticion")) {
-            return "El evento es bloqueado en peticion";
+            return true;
         } else {
-            return "El evento no es bloqueado en peticion";
+            return false;
         }
     }
 
@@ -63,6 +67,7 @@ public class EstadoEvento {
             return "El evento no es rechazado";
         }
     }
+
 
 
 }
