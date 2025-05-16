@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.Sesion;
-
+import com.example.RedSismica.Model.EstadoEvento;
 
 public class GestorAdmResultadoEventoSismico {
     // Atributos

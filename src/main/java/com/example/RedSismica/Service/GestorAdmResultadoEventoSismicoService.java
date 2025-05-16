@@ -49,7 +49,7 @@ public class GestorAdmResultadoEventoSismicoService {
 
     public List<EventoSismico> ordenarEventosPorFechaHora() {
         List<EventoSismico> eventos = eventoSismicoRepository.findAll();
-        eventos.sort(Comparator.comparing(EventoSismico::fechaHoraOrigen).reversed());
+        eventos.sort(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia).reversed());
         return eventos;
     }
 
@@ -64,7 +64,7 @@ public class GestorAdmResultadoEventoSismicoService {
 
     public boolean buscarEstadoBloqueado() {
         if (eventoSeleccionado != null) {
-            eventoBloqueado = eventoSeleccionado.getEstado() == Estado.BLOQUEADO;
+            eventoBloqueado = eventoSeleccionado.getEstadoEvento() == Estado.BLOQUEADO;
             return eventoBloqueado;
         }
         return false;

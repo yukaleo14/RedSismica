@@ -47,15 +47,6 @@ public class EventoSismico {
     }
 
 
-    public void getDatosPrincipales(){
-        this.fechaHoraOcurrencia = fechaHoraOcurrencia;
-        this.latitudEpicentro = latitudEpicentro;
-        this.longitudEpicentro = longitudEpicentro;
-        this.latitudHipocentro = latitudHipocentro;
-        this.longitudHipocentro = longitudHipocentro;
-        this.magnitud = magnitud;
-    }
-
 }
 
 
