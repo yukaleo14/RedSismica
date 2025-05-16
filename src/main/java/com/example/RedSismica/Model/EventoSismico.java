@@ -71,9 +71,8 @@ public class EventoSismico {
     public EstadoEvento getEstadoEvento() {
         return estadoEvento;
     }
-    
     public void buscarEventoSismico(){
-
+        //implementación
     }
     public boolean esAutodetectado(){
         return true;
@@ -105,6 +104,7 @@ public class EventoSismico {
         // Ordenar por latitudEpicentro
         // Ordenar por longitudHipocentro
         // Ordenar por longitudEpicentro
+        //SUBIIIIITEEEE
     }
 }
 
