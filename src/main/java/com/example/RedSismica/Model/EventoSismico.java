@@ -29,7 +29,6 @@ public class EventoSismico {
     private Double latitudEpicentro;
     private Double longitudEpicentro;
     private Double longitudHipocentro;
-    private Double profundidad;
     private Double magnitud;
     private String alcance;
     private String origenGeneracion;
@@ -38,74 +37,25 @@ public class EventoSismico {
     private EstadoEvento estadoEvento;
 
     //Getter
-    public LocalDateTime getfechaHoraOcurrencia() {
-        return fechaHoraOcurrencia.getNano();
+   
+    public void esPendRevision() {
+        this.estadoEvento.esPendRevision();
     }
-    public LocalDateTime getfechaHoraFin() {
-        return fechaHoraFin.getNano();
+
+    public void esAutoDetectado() {
+        this.estadoEvento.esAutoDetectado();
     }
-    public Double getLatitudHipocentro() {
-        return latitudHipocentro.longValue();
-    }
-    public Double getLatitudEpicentro() {
-        return latitudEpicentro.longValue();
-    }
-    public Double getLongitudEpicentro() {
-        return longitudEpicentro.longValue();
-    }
-    public Double getLongitudHipocentro() {
-        return longitudHipocentro.longValue();
-    }
-    public Double getProfundidad() {
-        return profundidad.longValue();
-    }
-    public Double getMagnitud() {
-        return magnitud.longValue();
-    }
-    public String getAlcance() {
-        return alcance;
-    }
-    public String getOrigenGeneracion() {
-        return origenGeneracion;
-    }
-    public EstadoEvento getEstadoEvento() {
-        return estadoEvento;
-    }
-    public void buscarEventoSismico(){
-        //implementación
-    }
-    public boolean esAutodetectado(){
-        return true;
-    }
-    public boolean esPendienteDeRevision(){
-        return true;
-    }
+
+
     public void getDatosPrincipales(){
-        getfechaHoraOcurrencia();
-        getfechaHoraFin();
-        getLatitudHipocentro()
-        getLatitudEpicentro();
-        getLongitudEpicentro();
-        getLongitudHipocentro();
-        getProfundidad();
-        getMagnitud();
-        getAlcance();
-        getOrigenGeneracion();
+        this.fechaHoraOcurrencia = fechaHoraOcurrencia;
+        this.latitudEpicentro = latitudEpicentro;
+        this.longitudEpicentro = longitudEpicentro;
+        this.latitudHipocentro = latitudHipocentro;
+        this.longitudHipocentro = longitudHipocentro;
+        this.magnitud = magnitud;
     }
-    public void getDatosGenerales(){
-        getDatosPrincipales();
-        getEstadoEvento();
-    }
-    public void ordenarEventoSismico(){
-        // Ordenar por fechaHoraOcurrencia
-        // Ordenar por magnitud
-        // Ordenar por profundidad
-        // Ordenar por latitudHipocentro
-        // Ordenar por latitudEpicentro
-        // Ordenar por longitudHipocentro
-        // Ordenar por longitudEpicentro
-        //SUBIIIIITEEEE
-    }
+
 }
 
 

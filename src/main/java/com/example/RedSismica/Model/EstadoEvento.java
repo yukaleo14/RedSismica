@@ -22,4 +22,22 @@ public class EstadoEvento {
 
     private String ambito;
     private String nombre;
+
+    public String esAutoDetectado() {
+        if (nombre.equals("AutoDetectado")) {
+            return "El evento es auto detectado";
+        } else {
+            return "El evento no es auto detectado";
+        }
+    }
+
+    public String esPendRevision() {
+        if (nombre.equals("PendienteRevision")) {
+            return "El evento es pendiente de revision";
+        } else {
+            return "El evento no es pendiente de revision";
+        }
+    }
+
+
 }
