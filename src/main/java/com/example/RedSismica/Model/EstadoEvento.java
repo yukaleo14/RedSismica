@@ -39,5 +39,30 @@ public class EstadoEvento {
         }
     }
 
+    public String esAmbitoEventoSismico() {
+        if ("EventoSismico".equals(ambito)) {
+            return "El evento es de ambito evento sismic";
+        } else {
+            return "El evento no es de ambito evento sismic";
+        }
+    }
+
+
+    public String esBloqueadoEnPeticion() {
+        if (nombre.equals("BloqueadoEnPeticion")) {
+            return "El evento es bloqueado en peticion";
+        } else {
+            return "El evento no es bloqueado en peticion";
+        }
+    }
+
+    public String esRechazado() {
+        if (nombre.equals("Rechazado")) {
+            return "El evento es rechazado";
+        } else {
+            return "El evento no es rechazado";
+        }
+    }
+
 
 }
