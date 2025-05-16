@@ -16,7 +16,7 @@ import com.example.RedSismica.Controller.MAPPER.EventoMapper;
 import com.example.RedSismica.Controller.MAPPER.RevisionManualMapper;
 import com.example.RedSismica.Controller.MAPPER.SerieTemporalMapper;
 import com.example.RedSismica.Model.EstadoEvento;
-import com.example.RedSismica.Model.Evento;
+import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.RevisionManual;
 import com.example.RedSismica.Model.SerieTemporal;
 import com.example.RedSismica.Repository.EstadoEventoRepository;
@@ -52,18 +52,18 @@ public class RevisionManualService {
     }
 
     public List<EventoDTO> obtenerEventosPendientesRevision() {
-        List<Evento> eventos = eventoRepository.findByEstadoEvento_NombreOrderByFechaHoraOrigenDesc("Registrado");
+        List<EventoSismico> eventos = eventoRepository.findByEstadoEvento_NombreOrderByFechaHoraOrigenDesc("Registrado");
         return eventos.stream()
                 .map(eventoMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     public EventoDTO obtenerDetallesEvento(Long eventoId) {
-        Optional<Evento> eventoOptional = eventoRepository.findById(eventoId);
+        Optional<EventoSismico> eventoOptional = eventoRepository.findById(eventoId);
         if (eventoOptional.isEmpty()) {
             throw new IllegalArgumentException("No se encontró el evento con ID: " + eventoId);
         }
-        Evento evento = eventoOptional.get();
+        EventoSismico evento = eventoOptional.get();
         EventoDTO eventoDTO = eventoMapper.toDTO(evento);
         List<SerieTemporal> seriesTemporales = serieTemporalRepository.findByEvento_IdOrderByInstanteTiempo(eventoId);
         List<SerieTemporalDTO> seriesTemporalesDTO = seriesTemporales.stream()
@@ -76,7 +76,7 @@ public class RevisionManualService {
 
     @Transactional
     public void registrarResultadoRevisionManual(RegistroRevisionManualDTO registroDTO) {
-        Optional<Evento> eventoOptional = eventoRepository.findById(registroDTO.getEventoId());
+        Optional<EventoSismico> eventoOptional = eventoRepository.findById(registroDTO.getEventoId());
         if (eventoOptional.isEmpty()) {
             throw new IllegalArgumentException("No se encontró el evento con ID: " + registroDTO.getEventoId());
         }
@@ -85,7 +85,7 @@ public class RevisionManualService {
             throw new IllegalArgumentException("No se encontró el revisor con ID: " + registroDTO.getRevisorId());
         }
 
-        Evento evento = eventoOptional.get();
+        EventoSismico evento = eventoOptional.get();
         EstadoEvento estadoEnRevision = estadoEventoRepository.findByNombre("En Revisión");
         if (estadoEnRevision == null) {
             throw new IllegalStateException("No se encontró el estado 'En Revisión'.");

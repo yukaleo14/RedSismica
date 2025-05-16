@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.RedSismica.Model.Evento;
+import com.example.RedSismica.Model.EventoSismico;
 
 @Repository
-public interface EventoRepository extends JpaRepository<Evento, Long> {
+public interface EventoRepository extends JpaRepository<EventoSismico, Long> {
     
-    List<Evento> findByEstadoEvento_NombreOrderByFechaHoraOrigenDesc(String estado);
+    List<EventoSismico> findByEstadoEvento_NombreOrderByFechaHoraOrigenDesc(String estado);
 
 }

@@ -23,7 +23,7 @@ public class RevisionManual {
     private Long id;
 
     @ManyToOne
-    private Evento evento;
+    private EventoSismico evento;
 
     @ManyToOne
     private Usuario revisor;

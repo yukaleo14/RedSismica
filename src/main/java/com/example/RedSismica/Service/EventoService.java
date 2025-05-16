@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.RedSismica.Controller.DTO.EventoDTO;
 import com.example.RedSismica.Controller.MAPPER.EventoMapper;
-import com.example.RedSismica.Model.Evento;
+import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Repository.EventoRepository;
 
 import jakarta.transaction.Transactional;
@@ -22,11 +22,11 @@ public class EventoService {
 
     @Transactional
     public void actualizarEvento(Long id, EventoDTO eventoDTO) {
-        Optional<Evento> eventoOptional = eventoRepository.findById(id);
+        Optional<EventoSismico> eventoOptional = eventoRepository.findById(id);
         if (eventoOptional.isEmpty()) {
             throw new IllegalArgumentException("No se encontró el evento con ID: " + id);
         }
-        Evento eventoExistente = eventoOptional.get();
+        EventoSismico eventoExistente = eventoOptional.get();
         // Actualizar los campos permitidos (magnitud, alcance, origenGeneracion)
         eventoExistente.setMagnitud(eventoDTO.getMagnitud());
         eventoExistente.setAlcance(eventoDTO.getAlcance());

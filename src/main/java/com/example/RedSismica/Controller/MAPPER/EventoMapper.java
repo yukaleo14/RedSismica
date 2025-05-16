@@ -4,11 +4,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.example.RedSismica.Controller.DTO.EventoDTO;
-import com.example.RedSismica.Model.Evento;
+import com.example.RedSismica.Model.EventoSismico;
 
 @Mapper(componentModel = "spring")
 public interface EventoMapper {
     
     @Mapping(source = "estadoEvento.nombre", target = "estadoEvento")
-    EventoDTO toDTO(Evento eventos);
+    EventoDTO toDTO(EventoSismico eventos);
 }

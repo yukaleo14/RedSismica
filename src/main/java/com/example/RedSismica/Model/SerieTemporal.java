@@ -25,7 +25,7 @@ public class SerieTemporal {
 
     @ManyToOne
     @JoinColumn(name = "evento_id")
-    private Evento evento;
+    private EventoSismico evento;
 
     @ManyToOne
     @JoinColumn(name = "estacion_id")
