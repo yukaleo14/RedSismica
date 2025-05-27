@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Sismografo {
     
-     @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

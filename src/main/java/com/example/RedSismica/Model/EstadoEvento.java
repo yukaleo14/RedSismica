@@ -27,6 +27,7 @@ public class EstadoEvento {
     private String ambito;
     private String nombre;
 
+    //Va en Service
     public boolean esAutoDetectado() {
         if (nombre.equals("AutoDetectado")) {
             return true;
