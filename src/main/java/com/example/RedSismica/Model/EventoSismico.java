@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,10 @@ public class EventoSismico {
 
     @ManyToOne
     private EstadoEvento estadoEvento;
+    @ManyToOne
+    private SerieTemporal serieTemporal;
+    @OneToOne
+    private Clasificacion clasificacion;
 
     //Getter
     public Long getId() {

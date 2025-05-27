@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +26,9 @@ public class MuestraSismica {
     private Long id;
     
     private LocalDateTime fechaHoraMuestra;
+    private float velocidad;
+    private float frecuencia;
+    private float longitud;
 
     @OneToMany
     @JoinColumn(name = "detalle_muestra_id")
