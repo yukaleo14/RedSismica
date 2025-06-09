@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CambioDeEstado {
+public class CambioEstado {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +28,8 @@ public class CambioDeEstado {
 
     @OneToOne
     private EstadoEvento estadoEvento;
+
+    public boolean esActual() {
+       return this.estadoEvento.esActual();
+    }
 }

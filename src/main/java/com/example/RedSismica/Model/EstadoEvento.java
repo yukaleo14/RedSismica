@@ -36,7 +36,7 @@ public class EstadoEvento {
         }
     }
 
-    public boolean esPendRevision() {
+    public boolean esPendienteRevision() {
         if (nombre.equals("PendienteRevision")) {
             return true;
         } else {
@@ -67,6 +67,11 @@ public class EstadoEvento {
         } else {
             return "El evento no es rechazado";
         }
+    }
+
+    public boolean esActual() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'esActual'");
     }
 
 

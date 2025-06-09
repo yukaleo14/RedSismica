@@ -33,4 +33,12 @@ public class EstacionSismologica {
     public String getNombre() {
         return nombre;
     }
+    public Object getId() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getId'");
+    }
+    public void setId(Object id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setId'");
+    }
 }

@@ -43,48 +43,22 @@ public class EventoSismico {
     @OneToOne
     private Clasificacion clasificacion;
 
-    //Getter
-    public Long getId() {
-        return id;
-    }
-    public LocalDateTime getFechaHoraOcurrencia() {
-        return fechaHoraOcurrencia;
-    }
-    public LocalDateTime getFechaHoraFin() {
-        return fechaHoraFin;
-    }
-    public Double getLatitudHipocentro() {
-        return latitudHipocentro;
-    }
-    public Double getLatitudEpicentro() {
-        return latitudEpicentro;
-    }
-    public Double getLongitudEpicentro() {
-        return longitudEpicentro;
-    }
-    public Double getLongitudHipocentro() {
-        return longitudHipocentro;
-    }
-    public Double getMagnitud() {
-        return magnitud;
-    }
-    public String getAlcance() {
-        return alcance;
-    }
-    public String getOrigenGeneracion() {
-        return origenGeneracion;
-    }
-    public EstadoEvento getEstadoEvento() {
-        return estadoEvento;
-    }
-
    
-    public void esPendRevision() {
-        this.estadoEvento.esPendRevision();
+    public boolean esPendendienteRevision() {
+        return this.estadoEvento.esPendienteRevision();
     }
 
-    public void esAutoDetectado() {
-        this.estadoEvento.esAutoDetectado();
+    public boolean esAutoDetectado() {
+        return this.estadoEvento.esAutoDetectado();
+    }
+
+    public void bloquear() {
+        throw new UnsupportedOperationException("Unimplemented method 'bloquear'");
+    }
+
+    public boolean esPendienteRevision() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'esPendienteRevision'");
     }
  
 

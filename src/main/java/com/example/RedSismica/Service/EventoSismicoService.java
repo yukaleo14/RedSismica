@@ -1,8 +1,11 @@
 package com.example.RedSismica.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Repository.EventoSismicoRepository;
@@ -10,13 +13,41 @@ import com.example.RedSismica.Repository.EventoSismicoRepository;
 @Service
 public class EventoSismicoService {
     
-    private EventoSismicoRepository eventosismicorepo;
+    @Autowired private EventoSismicoRepository repo;
 
-     public EventoSismicoService(EventoSismicoRepository eventosismicorepo) {
-        this.eventosismicorepo = eventosismicorepo;
+    public List<EventoSismico> buscarAutoDetectados() {
+        return repo.findByAutoDetectadoTrue();
     }
 
-    public List<EventoSismico> MostrarEventosSismicosParaSeleccion() {
-        return eventosismicorepo.findByOrderByFechaHoraOcuerenciaDesc();
+    public boolean esAutoDetectado(EventoSismico evento) {
+        return evento.esAutoDetectado();
+    }
+
+    public boolean esPendienteRevision(EventoSismico evento) {
+        return evento.esPendienteRevision();
+    }
+
+    public LocalDateTime getFechaHoraOcurrencia(EventoSismico evento) {
+        return evento.getFechaHoraOcurrencia();
+    }
+
+    public double getLatitudEpicentro(EventoSismico evento) {
+        return evento.getLatitudEpicentro();
+    }
+
+    public double getLongitudEpicentro(EventoSismico evento) {
+        return evento.getLongitudEpicentro();
+    }
+
+    public double getLatitudHipocentro(EventoSismico evento) {
+        return evento.getLatitudHipocentro();
+    }
+
+    public double getLongitudHipocentro(EventoSismico evento) {
+        return evento.getLongitudHipocentro();
+    }
+
+    public double getMagnitud(EventoSismico evento) {
+        return evento.getMagnitud();
     }
 }

@@ -37,6 +37,6 @@ public class Sismografo {
     @OneToOne
     private EstacionSismologica estacionSismologica;
     @ManyToOne
-    private CambioDeEstado cambioDeEstado;
+    private CambioEstado cambioDeEstado;
 
 }
