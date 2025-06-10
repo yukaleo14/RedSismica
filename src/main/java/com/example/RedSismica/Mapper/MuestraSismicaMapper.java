@@ -7,7 +7,7 @@ import com.example.RedSismica.Model.MuestraSismica;
 
 public class MuestraSismicaMapper {
     
-    public static MuestraSismicaDTO toDTO(MuestraSismica entity) {
+    public MuestraSismicaDTO toDTO(MuestraSismica entity) {
         if (entity == null) return null;
 
         MuestraSismicaDTO dto = new MuestraSismicaDTO();
@@ -22,7 +22,7 @@ public class MuestraSismicaMapper {
         return dto;
     }
 
-    public static MuestraSismica toEntity(MuestraSismicaDTO dto) {
+    public MuestraSismica toEntity(MuestraSismicaDTO dto) {
         if (dto == null) return null;
 
         MuestraSismica entity = new MuestraSismica();
@@ -37,7 +37,7 @@ public class MuestraSismicaMapper {
         return entity;
     }
 
-    private static DetalleMuestraSismicaDTO toDetalleDTO(DetalleMuestraSismica entity) {
+    private DetalleMuestraSismicaDTO toDetalleDTO(DetalleMuestraSismica entity) {
         if (entity == null) return null;
 
         DetalleMuestraSismicaDTO dto = new DetalleMuestraSismicaDTO();
@@ -46,7 +46,7 @@ public class MuestraSismicaMapper {
         return dto;
     }
 
-    private static DetalleMuestraSismica toDetalleEntity(DetalleMuestraSismicaDTO dto) {
+    private DetalleMuestraSismica toDetalleEntity(DetalleMuestraSismicaDTO dto) {
         if (dto == null) return null;
 
         DetalleMuestraSismica entity = new DetalleMuestraSismica();
