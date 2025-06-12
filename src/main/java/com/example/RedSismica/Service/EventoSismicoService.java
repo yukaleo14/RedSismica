@@ -50,4 +50,9 @@ public class EventoSismicoService {
     public double getMagnitud(EventoSismico evento) {
         return evento.getMagnitud();
     }
+
+    public List<EventoSismico> MostrarEventosSismicosParaSeleccion() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'MostrarEventosSismicosParaSeleccion'");
+    }
 }

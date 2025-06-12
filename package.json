@@ -17,7 +17,10 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.21",
     "dotenv": "^16.5.0",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "postcss": "^8.5.5",
+    "tailwindcss": "^4.1.10"
   }
 }
