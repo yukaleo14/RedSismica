@@ -17,4 +17,9 @@ public class SerieTemporalService {
     public List<SerieTemporal> obtenerSeries(EventoSismico evento) {
         return repo.findByEventoSismico(evento);
     }
+
+    public SerieTemporal getById(Long idSerie) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+    }
 }

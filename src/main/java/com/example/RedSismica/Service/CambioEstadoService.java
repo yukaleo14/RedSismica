@@ -26,4 +26,9 @@ public class CambioEstadoService {
     public boolean esActual(CambioEstado cambio) {
         return cambio.esActual();
     }
+
+    public CambioEstado crearCambioEstado(CambioEstado nuevoCambio) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'crearCambioEstado'");
+    }
 }

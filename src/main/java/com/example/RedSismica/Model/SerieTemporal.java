@@ -1,8 +1,9 @@
 package com.example.RedSismica.Model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,9 +34,8 @@ public class SerieTemporal {
     @JoinColumn(name = "estacion_id")
     private EstacionSismologica estacionSismologica;
 
-    @OneToMany
-    @JoinColumn(name = "muestra_id")
-    private MuestraSismica muestraSismica;
+    @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MuestraSismica> muestraSismica;
 
 
     private LocalDateTime fechaHoraRegistroMuestra;

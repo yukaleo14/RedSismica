@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import com.example.RedSismica.Model.Clasificacion;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Repository.EventoSismicoRepository;
 
@@ -51,8 +51,13 @@ public class EventoSismicoService {
         return evento.getMagnitud();
     }
 
-    public List<EventoSismico> MostrarEventosSismicosParaSeleccion() {
+    public void asociarClasificacion(Long id, Clasificacion guardada) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'MostrarEventosSismicosParaSeleccion'");
+        throw new UnsupportedOperationException("Unimplemented method 'asociarClasificacion'");
+    }
+
+    public EventoSismico getById(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 }

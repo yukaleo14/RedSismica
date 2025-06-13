@@ -18,6 +18,7 @@ public class EstacionSismologicaDTO {
     private Double longitud;
     private LocalDateTime fechaSolicitudCertificacion;
     private String nroCerificacionAdquisicion;
+    
     public void setId(Object id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setId'");

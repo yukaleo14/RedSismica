@@ -9,4 +9,9 @@ public class EstadoEventoService {
     public boolean esBloqueadoEnRevision(EstadoEvento estado) {
         return estado.esBloqueadoEnPeticion();
     }
+
+    public EstadoEvento getById(Long nuevoEstadoId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+    }
 }

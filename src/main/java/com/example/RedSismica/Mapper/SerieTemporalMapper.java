@@ -8,7 +8,10 @@ import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.SerieTemporal;
 
 public class SerieTemporalMapper {
- public static SerieTemporalDTO toDTO(SerieTemporal entity) {
+    
+private MuestraSismicaMapper MuestraSismicaMapper;
+
+ public SerieTemporalDTO toDTO(SerieTemporal entity) {
         if (entity == null) return null;
 
         SerieTemporalDTO dto = new SerieTemporalDTO();
@@ -25,7 +28,7 @@ public class SerieTemporalMapper {
         return dto;
     }
 
-    public static SerieTemporal toEntity(SerieTemporalDTO dto) {
+    public SerieTemporal toEntity(SerieTemporalDTO dto) {
         if (dto == null) return null;
 
         SerieTemporal entity = new SerieTemporal();
@@ -42,21 +45,21 @@ public class SerieTemporalMapper {
         return entity;
     }
 
-    private static EventoSismicoDTO toEventoDTO(EventoSismico entity) {
+    private EventoSismicoDTO toEventoDTO(EventoSismico entity) {
         if (entity == null) return null;
         EventoSismicoDTO dto = new EventoSismicoDTO();
         dto.setId(entity.getId());
         return dto;
     }
 
-    private static EventoSismico toEventoEntity(EventoSismicoDTO dto) {
+    private EventoSismico toEventoEntity(EventoSismicoDTO dto) {
         if (dto == null) return null;
         EventoSismico entity = new EventoSismico();
         entity.setId(dto.getId());
         return entity;
     }
 
-    private static EstacionSismologicaDTO toEstacionDTO(EstacionSismologica entity) {
+    private EstacionSismologicaDTO toEstacionDTO(EstacionSismologica entity) {
         if (entity == null) return null;
         EstacionSismologicaDTO dto = new EstacionSismologicaDTO();
         dto.setId(entity.getId());
@@ -64,7 +67,7 @@ public class SerieTemporalMapper {
         return dto;
     }
 
-    private static EstacionSismologica toEstacionEntity(EstacionSismologicaDTO dto) {
+    private EstacionSismologica toEstacionEntity(EstacionSismologicaDTO dto) {
         if (dto == null) return null;
         EstacionSismologica entity = new EstacionSismologica();
         entity.setId(dto.getId());
