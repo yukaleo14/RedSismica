@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +29,10 @@ public class MuestraSismica {
     private float velocidad;
     private float frecuencia;
     private float longitud;
+
+    @ManyToOne
+    @JoinColumn(name = "serie_temporal_id")
+    private SerieTemporal serieTemporal;
 
     @OneToOne(cascade = CascadeType.ALL) 
     @JoinColumn(name = "detalle_muestra_id", unique = true)

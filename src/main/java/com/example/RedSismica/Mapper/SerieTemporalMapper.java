@@ -2,6 +2,8 @@ package com.example.RedSismica.Mapper;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.example.RedSismica.DTO.EstacionSismologicaDTO;
 import com.example.RedSismica.DTO.EventoSismicoDTO;
 import com.example.RedSismica.DTO.SerieTemporalDTO;
@@ -9,12 +11,13 @@ import com.example.RedSismica.Model.EstacionSismologica;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.SerieTemporal;
 
+@Component
 public class SerieTemporalMapper {
-    
-private MuestraSismicaMapper muestraSismicaMapper;
+    private MuestraSismicaMapper muestraSismicaMapper;
 
- public SerieTemporalDTO toDTO(SerieTemporal entity) {
-        if (entity == null) return null;
+    public SerieTemporalDTO toDTO(SerieTemporal entity) {
+        if (entity == null)
+            return null;
 
         SerieTemporalDTO dto = new SerieTemporalDTO();
         dto.setId(entity.getId());
@@ -31,7 +34,8 @@ private MuestraSismicaMapper muestraSismicaMapper;
     }
 
     public SerieTemporal toEntity(SerieTemporalDTO dto) {
-        if (dto == null) return null;
+        if (dto == null)
+            return null;
 
         SerieTemporal entity = new SerieTemporal();
         entity.setId(dto.getId());
@@ -48,21 +52,24 @@ private MuestraSismicaMapper muestraSismicaMapper;
     }
 
     private EventoSismicoDTO toEventoDTO(EventoSismico entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         EventoSismicoDTO dto = new EventoSismicoDTO();
         dto.setId(entity.getId());
         return dto;
     }
 
     private EventoSismico toEventoEntity(EventoSismicoDTO dto) {
-        if (dto == null) return null;
+        if (dto == null)
+            return null;
         EventoSismico entity = new EventoSismico();
         entity.setId(dto.getId());
         return entity;
     }
 
     private EstacionSismologicaDTO toEstacionDTO(EstacionSismologica entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         EstacionSismologicaDTO dto = new EstacionSismologicaDTO();
         dto.setId(entity.getId());
         dto.setNombre(entity.getNombre()); // si tiene
@@ -70,7 +77,8 @@ private MuestraSismicaMapper muestraSismicaMapper;
     }
 
     private EstacionSismologica toEstacionEntity(EstacionSismologicaDTO dto) {
-        if (dto == null) return null;
+        if (dto == null)
+            return null;
         EstacionSismologica entity = new EstacionSismologica();
         entity.setId(dto.getId());
         entity.setNombre(dto.getNombre()); // si tiene

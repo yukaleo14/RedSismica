@@ -15,7 +15,7 @@ public class SerieTemporalService {
     private SerieTemporalRepository repo;
 
     public List<SerieTemporal> obtenerSeries(EventoSismico evento) {
-        return repo.findByEventoSismico(evento);
+        return repo.findByEvento(evento);
     }
 
     public SerieTemporal getById(Long idSerie) {

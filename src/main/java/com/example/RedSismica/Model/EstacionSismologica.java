@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,17 +28,23 @@ public class EstacionSismologica {
     private LocalDateTime fechaSolicitudCertificacion;
     private String nroCerificacionAdquisicion;
 
+    @ManyToOne
+    @JoinColumn(name = "evento_sismico_id")
+    private EventoSismico eventoSismico;
 
     public Long getCodigoEstacion() {
         return codigoEstacion;
     }
+
     public String getNombre() {
         return nombre;
     }
+
     public Object getId() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getId'");
     }
+
     public void setId(Object id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setId'");

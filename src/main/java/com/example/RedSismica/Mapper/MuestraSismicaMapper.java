@@ -1,16 +1,18 @@
 package com.example.RedSismica.Mapper;
 
-import java.util.List;
+import org.springframework.stereotype.Component;
 
 import com.example.RedSismica.DTO.DetalleMuestraSismicaDTO;
 import com.example.RedSismica.DTO.MuestraSismicaDTO;
 import com.example.RedSismica.Model.DetalleMuestraSismica;
 import com.example.RedSismica.Model.MuestraSismica;
 
+@Component
 public class MuestraSismicaMapper {
-    
+
     public MuestraSismicaDTO toDTO(MuestraSismica entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
 
         MuestraSismicaDTO dto = new MuestraSismicaDTO();
         dto.setId(entity.getId());
@@ -25,7 +27,8 @@ public class MuestraSismicaMapper {
     }
 
     public MuestraSismica toEntity(MuestraSismicaDTO dto) {
-        if (dto == null) return null;
+        if (dto == null)
+            return null;
 
         MuestraSismica entity = new MuestraSismica();
         entity.setId(dto.getId());
@@ -40,7 +43,8 @@ public class MuestraSismicaMapper {
     }
 
     private DetalleMuestraSismicaDTO toDetalleDTO(DetalleMuestraSismica entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
 
         DetalleMuestraSismicaDTO dto = new DetalleMuestraSismicaDTO();
         dto.setId(entity.getId());
@@ -49,11 +53,12 @@ public class MuestraSismicaMapper {
     }
 
     private DetalleMuestraSismica toDetalleEntity(DetalleMuestraSismicaDTO dto) {
-        if (dto == null) return null;
+        if (dto == null)
+            return null;
 
         DetalleMuestraSismica entity = new DetalleMuestraSismica();
         entity.setId(dto.getId());
         // Mapear más campos si existen
         return entity;
-    } 
+    }
 }

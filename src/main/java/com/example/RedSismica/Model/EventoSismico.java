@@ -35,6 +35,8 @@ public class EventoSismico {
     private Double magnitud;
     private String alcance;
     private String origenGeneracion;
+    private Boolean autoDetectado;
+    private Boolean pendienteRevision;
 
     @ManyToOne
     private EstadoEvento estadoEvento;

@@ -10,5 +10,5 @@ import com.example.RedSismica.Model.SerieTemporal;
 
 @Repository
 public interface SerieTemporalRepository extends JpaRepository<SerieTemporal, Long> {
-    List<SerieTemporal> findByEventoSismico(EventoSismico evento);
+    List<SerieTemporal> findByEvento(EventoSismico eventoSismico);
 }

@@ -37,7 +37,6 @@ public class SerieTemporal {
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MuestraSismica> muestraSismica;
 
-
     private LocalDateTime fechaHoraRegistroMuestra;
     private LocalDateTime fechaHoraRegristo;
     private Double frecuenciaMuestreo;
