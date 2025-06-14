@@ -1,5 +1,7 @@
 package com.example.RedSismica.Mapper;
 
+import java.util.List;
+
 import com.example.RedSismica.DTO.EstacionSismologicaDTO;
 import com.example.RedSismica.DTO.EventoSismicoDTO;
 import com.example.RedSismica.DTO.SerieTemporalDTO;
@@ -9,7 +11,7 @@ import com.example.RedSismica.Model.SerieTemporal;
 
 public class SerieTemporalMapper {
     
-private MuestraSismicaMapper MuestraSismicaMapper;
+private MuestraSismicaMapper muestraSismicaMapper;
 
  public SerieTemporalDTO toDTO(SerieTemporal entity) {
         if (entity == null) return null;
@@ -23,7 +25,7 @@ private MuestraSismicaMapper MuestraSismicaMapper;
 
         dto.setEvento(toEventoDTO(entity.getEvento()));
         dto.setEstacionSismologica(toEstacionDTO(entity.getEstacionSismologica()));
-        dto.setMuestraSismica(MuestraSismicaMapper.toDTO(entity.getMuestraSismica()));
+        dto.setMuestraSismica(muestraSismicaMapper.toDTO(entity.getMuestraSismica().get(0)));
 
         return dto;
     }
@@ -40,7 +42,7 @@ private MuestraSismicaMapper MuestraSismicaMapper;
 
         entity.setEvento(toEventoEntity(dto.getEvento()));
         entity.setEstacionSismologica(toEstacionEntity(dto.getEstacionSismologica()));
-        entity.setMuestraSismica(MuestraSismicaMapper.toEntity(dto.getMuestraSismica()));
+        entity.setMuestraSismica(List.of(muestraSismicaMapper.toEntity(dto.getMuestraSismica())));
 
         return entity;
     }

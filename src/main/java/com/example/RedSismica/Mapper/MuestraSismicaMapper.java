@@ -9,15 +9,15 @@ import com.example.RedSismica.Model.MuestraSismica;
 
 public class MuestraSismicaMapper {
     
-    public MuestraSismicaDTO toDTO(List<MuestraSismica> entity) {
+    public MuestraSismicaDTO toDTO(MuestraSismica entity) {
         if (entity == null) return null;
 
         MuestraSismicaDTO dto = new MuestraSismicaDTO();
-        dto.setId(list.getId());
+        dto.setId(entity.getId());
         dto.setFechaHoraMuestra(entity.getFechaHoraMuestra());
-        dto.setVelocidad(list.getVelocidad());
+        dto.setVelocidad(entity.getVelocidad());
         dto.setFrecuencia(entity.getFrecuencia());
-        dto.setLongitud(list.getLongitud());
+        dto.setLongitud(entity.getLongitud());
 
         dto.setDetalleMuestraSismica(toDetalleDTO(entity.getDetalleMuestraSismica()));
 
