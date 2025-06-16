@@ -28,15 +28,13 @@ Además, se implementó una base del sistema utilizando Java con Spring Boot par
 
  **Terminal**
  
- mvn spring-boot:run
+- mvn spring-boot:run
 
 ### Frontend
 
 **Terminal**
 
- cd ./frontend/EventoSismico-app/
- 
- npm install
- 
- npm run dev
+- cd ./frontend/EventoSismico-app/
+- npm install
+- npm run dev
  
