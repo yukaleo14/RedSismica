@@ -13,7 +13,7 @@ public class RegisterRequest {
     String username;
     String password;
     String firstname;
-    String lastname;
+    String lastname;    
     public String getNombre() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getNombre'");

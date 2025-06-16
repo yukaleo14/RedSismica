@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
+import { useNavigate } from 'react-router-dom';
 
 function OrdenControl() {
   const [eventos, setEventos] = useState([]);
@@ -10,6 +11,14 @@ function OrdenControl() {
   const [estadoSismografo, setEstadoSismografo] = useState(3); // Default state
   const [currentTime, setCurrentTime] = useState('');
   const [error, setError] = useState('');
+  const [username, setUsername] = useState('');
+  const navigate = useNavigate();
+  
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username') || 'Usuario';
+    setUsername(storedUsername);
+  }, []);
 
   // Fetch pending seismic events
   useEffect(() => {
@@ -75,9 +84,19 @@ function OrdenControl() {
     <div className="min-h-screen flex flex-col bg-gray-100 p-6">
       {/* Header */}
       <div className="flex justify-between bg-gray-300 p-4 rounded-t-lg">
-        <span>Nombre Usuario</span>
+        <span>{username}</span>
         <span>Estado Orden: ABIERTO</span>
         <span>{currentTime}</span>
+        <button
+          onClick={() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            navigate('/login');
+          }}
+          className="bg-red-600 text-white hover:bg-red-900 px-4 py-1 rounded"
+        >
+          Cerrar Sesión
+      </button>
       </div>
       {/* Main Content */}
       <div className="flex flex-1 mt-4 gap-4">
@@ -110,13 +129,13 @@ function OrdenControl() {
             <div className="flex justify-end gap-4 mt-2">
               <button
                 onClick={handleConfirmObservacion}
-                className="bg-gray-600 text-white px-4 py-1 rounded"
+                className="bg-gray-600 text-white hover:bg-gray-800 px-4 py-1 rounded"
               >
                 Confirmar
               </button>
               <button
                 onClick={() => setObservacion('')}
-                className="bg-gray-400 text-white px-4 py-1 rounded"
+                className="bg-gray-400 text-white hover:bg-gray-800 px-4 py-1 rounded"
               >
                 Cancelar
               </button>
@@ -124,10 +143,14 @@ function OrdenControl() {
           </div>
 
           {/* Motivo (Placeholder for future implementation) */}
+          <div className="text-black font-medium justify-start">Tipo de motivos Fuera de Servicio</div>
           <div className="bg-gray-400 rounded p-4 flex items-center justify-between">
-            <div className="text-white justify-start">Tipo de motivos Fuera de Servicio</div>
             <div className="text-white bg-gray-700 px-4 py-2 rounded">Motivo 1</div>
-            <button className="bg-gray-300 px-4 hover:bg-gray-700 py-2 rounded">Comentario</button>
+            <input
+                type="text"
+                className="w-100 border rounded px-2 py-1 mt-1"
+              />
+            <button className="bg-gray-300 px-4 hover:bg-gray-700 py-2 rounded">Agregar</button>
           </div>
         </div>
 
@@ -135,7 +158,7 @@ function OrdenControl() {
         <div className="bg-gray-200 p-4 rounded-lg w-1/4 flex flex-col justify-between">
           <div>
             <h3 className="font-medium mb-2">Situación Sismógrafo</h3>
-            {[0, 1, 2, 3, 4].map((id) => (
+            {['jijo', 1, 2, 3, 4].map((id) => (
               <div key={id} className="flex items-center gap-2 mb-2">
                 <div
                   className={`w-4 h-4 rounded-full border cursor-pointer ${
@@ -148,7 +171,7 @@ function OrdenControl() {
             ))}
             <button
               onClick={handleUpdateEstado}
-              className="bg-gray-600 text-white w-full mt-2 py-1 rounded"
+              className="bg-gray-600 text-white hover:bg-gray-800 w-full mt-2 py-1 rounded"
             >
               Actualizar
             </button>
@@ -158,7 +181,7 @@ function OrdenControl() {
 
       {/* Confirm Order */}
       <div className="flex justify-end mt-4">
-        <button className="bg-gray-800 text-white px-6 py-2 rounded">
+        <button className="bg-green-600 text-white hover:bg-green-800 px-6 py-2 rounded">
           CONFIRMAR ORDEN DE INSPECCIÓN
         </button>
       </div>

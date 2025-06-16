@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
-function Login() {
+function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [user, setUser] = useState({
     username: '',
     password: '',
+    firstname: '',
+    lastname: '',
   });
   const [error, setError] = useState('');
 
@@ -21,12 +23,13 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`/autenticacion/login`, user);
+      const response = await axios.post(`/autenticacion/register`, user);
+      // Assuming the backend returns a token
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('username', user.username);
-      navigate('/ordencontrol');
+      navigate('/login'); // Redirect to login after successful registration
+      // Alternatively, navigate to '/orden-control' for auto-login
     } catch (err) {
-      setError('Invalid username or password');
+      setError(err.response?.data?.message || 'Registration failed');
     }
   };
 
@@ -42,13 +45,14 @@ function Login() {
           {error && <p className="text-red-500">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-medium">Nombre Usuario</label>
+              <label className="block text-sm font-medium">Nombre de Usuario</label>
               <input
                 type="text"
                 name="username"
                 value={user.username}
                 onChange={handleChange}
                 className="w-full border rounded px-2 py-1 mt-1"
+                required
               />
             </div>
             <div className="relative">
@@ -59,6 +63,7 @@ function Login() {
                 value={user.password}
                 onChange={handleChange}
                 className="w-full border rounded px-2 py-1 mt-1"
+                required
               />
               <button
                 type="button"
@@ -68,16 +73,38 @@ function Login() {
                 <Eye size={18} />
               </button>
             </div>
+            <div>
+              <label className="block text-sm font-medium">Nombre</label>
+              <input
+                type="text"
+                name="firstname"
+                value={user.firstname}
+                onChange={handleChange}
+                className="w-full border rounded px-2 py-1 mt-1"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Apellido</label>
+              <input
+                type="text"
+                name="lastname"
+                value={user.lastname}
+                onChange={handleChange}
+                className="w-full border rounded px-2 py-1 mt-1"
+                required
+              />
+            </div>
             <div className="flex justify-between space-x-4 mt-4">
               <button
                 type="submit"
                 className="flex-1 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
               >
-                Ingresar
+                Registrarse
               </button>
               <button
                 type="button"
-                onClick={() => setUser({ username: '', password: '' })}
+                onClick={() => navigate('/login')}
                 className="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
               >
                 Cancelar
@@ -86,10 +113,10 @@ function Login() {
           </form>
           <div className="text-center mt-2">
             <button
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/login')}
               className="text-gray-700 hover:underline"
             >
-              ¿No tienes una cuenta? Regístrate
+              ¿Ya tienes una cuenta? Inicia sesión
             </button>
           </div>
         </div>
@@ -98,4 +125,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;
