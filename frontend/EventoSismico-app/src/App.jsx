@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<OrdenInspeccion />} />
         <Route path="/Login" element={<Login />} />
-        <Route path="/orden-control" element={<OrdenControl />} />
+        <Route path="/ordencontrol" element={<OrdenControl />} />
       </Routes>
     </Router>
   );
