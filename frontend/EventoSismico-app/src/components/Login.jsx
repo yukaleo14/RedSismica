@@ -1,10 +1,33 @@
 import { useState } from 'react';
 import { Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [user, setUser] = useState({
+    username: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${API_BASE_URL}/autenticacion/login`, user);
+      localStorage.setItem('token', response.data.token);
+      navigate('/orden-control');
+    } catch (err) {
+      setError('Invalid username or password');
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -15,34 +38,51 @@ function Login() {
           </svg>
         </div>
         <div className="w-1/2 flex flex-col px-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium">Nombre Usuario</label>
-            <input type="text" className="w-full border rounded px-2 py-1 mt-1" />
-          </div>
-          <div className="relative">
-            <label className="block text-sm font-medium">Contraseña</label>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              className="w-full border rounded px-2 py-1 mt-1"
-            />
-            <button
-              type="button"
-              className="absolute right-2 bottom-2"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              <Eye size={18} />
-            </button>
-          </div>
-          <div className="flex justify-between space-x-4 mt-4">
-            <button
-                onClick={() => navigate('/orden-control')}
-                className="flex-1 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">
-              Ingresar
-            </button>
-            <button className="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-              Cancelar
-            </button>
-          </div>
+          {error && <p className="text-red-500">{error}</p>}
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-sm font-medium">Nombre Usuario</label>
+              <input
+                type="text"
+                name="username"
+                value={user.username}
+                onChange={handleChange}
+                className="w-full border rounded px-2 py-1 mt-1"
+              />
+            </div>
+            <div className="relative">
+              <label className="block text-sm font-medium">Contraseña</label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={user.password}
+                onChange={handleChange}
+                className="w-full border rounded px-2 py-1 mt-1"
+              />
+              <button
+                type="button"
+                className="absolute right-2 bottom-2"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <Eye size={18} />
+              </button>
+            </div>
+            <div className="flex justify-between space-x-4 mt-4">
+              <button
+                type="submit"
+                className="flex-1 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
+              >
+                Ingresar
+              </button>
+              <button
+                type="button"
+                onClick={() => setUser({ username: '', password: '' })}
+                className="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
