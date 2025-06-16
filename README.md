@@ -27,11 +27,16 @@ Además, se implementó una base del sistema utilizando Java con Spring Boot par
 2. Desde la raíz del proyecto, ejecutá:
 
  **Terminal**
+ 
  mvn spring-boot:run
 
 ### Frontend
 
 **Terminal**
+
  cd ./frontend/EventoSismico-app/
+ 
  npm install
+ 
  npm run dev
+ 
