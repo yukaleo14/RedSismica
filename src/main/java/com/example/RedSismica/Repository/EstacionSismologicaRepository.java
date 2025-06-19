@@ -11,4 +11,4 @@ import com.example.RedSismica.Model.EventoSismico;
 @Repository
 public interface EstacionSismologicaRepository extends JpaRepository<EstacionSismologica, Long> {
     List<EstacionSismologica> findByEventoSismico(EventoSismico evento);
-}
+}   

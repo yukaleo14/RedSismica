@@ -46,7 +46,7 @@ public class EventoSismico {
     private Clasificacion clasificacion;
 
    
-    public boolean esPendendienteRevision() {
+    public boolean esPendienteRevision() {
         return this.estadoEvento.esPendienteRevision();
     }
 
@@ -57,12 +57,6 @@ public class EventoSismico {
     public void bloquear() {
         throw new UnsupportedOperationException("Unimplemented method 'bloquear'");
     }
-
-    public boolean esPendienteRevision() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'esPendienteRevision'");
-    }
- 
 
 }
 

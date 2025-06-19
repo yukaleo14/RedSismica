@@ -12,10 +12,6 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
     String username;
     String password;
-    String firstname;
-    String lastname;    
-    public String getNombre() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNombre'");
-    }
+    String nombre;
+    String rol;
 }

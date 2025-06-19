@@ -10,8 +10,8 @@ function Register() {
   const [user, setUser] = useState({
     username: '',
     password: '',
-    firstname: '',
-    lastname: '',
+    nombre: '',
+    rol:''
   });
   const [error, setError] = useState('');
 
@@ -77,19 +77,8 @@ function Register() {
               <label className="block text-sm font-medium">Nombre</label>
               <input
                 type="text"
-                name="firstname"
-                value={user.firstname}
-                onChange={handleChange}
-                className="w-full border rounded px-2 py-1 mt-1"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Apellido</label>
-              <input
-                type="text"
-                name="lastname"
-                value={user.lastname}
+                name="nombre"
+                value={user.nombre}
                 onChange={handleChange}
                 className="w-full border rounded px-2 py-1 mt-1"
                 required

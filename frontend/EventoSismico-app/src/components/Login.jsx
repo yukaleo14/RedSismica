@@ -26,7 +26,7 @@ function Login() {
       localStorage.setItem('username', user.username);
       navigate('/ordencontrol');
     } catch (err) {
-      setError('Invalid username or password');
+      setError(err.response?.data?.message || 'Invalid username or password');
     }
   };
 

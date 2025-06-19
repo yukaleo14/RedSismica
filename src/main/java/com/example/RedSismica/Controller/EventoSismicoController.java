@@ -64,8 +64,7 @@ public class EventoSismicoController {
     public ResponseEntity<List<EventoSismicoDTO>> obtenerEventosPendientes() {
         List<EventoSismico> eventos = eventoService.buscarAutoDetectados()
             .stream()
-            .filter(EventoSismico::esAutoDetectado)
-            .filter(EventoSismico::esPendendienteRevision)
+            .filter(e -> e.esAutoDetectado() || e.esPendienteRevision())
             .collect(Collectors.toList());
 
         List<EventoSismicoDTO> dtoList = eventos.stream()
