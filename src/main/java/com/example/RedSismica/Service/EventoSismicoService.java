@@ -3,6 +3,7 @@ package com.example.RedSismica.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,8 @@ public class EventoSismicoService {
     
     @Autowired private EventoSismicoRepository repo;
 
-    public List<EventoSismico> buscarAutoDetectados() {
-        return repo.findByAutoDetectadoTrue();
+    public List<EventoSismico> buscarPendientes() {
+    return repo.findByAutoDetectadoTrueOrPendienteRevisionTrue();
     }
 
     public boolean esAutoDetectado(EventoSismico evento) {

@@ -10,8 +10,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EventoSismicoRepository extends JpaRepository<EventoSismico, Long> {
+ //Encontrar Listados de Obejetos dentro de Evento Sismico y ordenar por fecha y hora de forma decendente
 
-//Encontrar Listados de Obejetos dentro de Evento Sismico y ordenar por fecha y hora de forma decendente
-   List<EventoSismico> findByAutoDetectadoTrue();
-    List<EventoSismico> findByPendienteRevisionTrue();
+    // EventoSismicoRepository.java
+    List<EventoSismico> findByAutoDetectadoTrueOrPendienteRevisionTrue();
+
 }

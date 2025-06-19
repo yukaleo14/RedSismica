@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ import com.example.RedSismica.Model.Clasificacion;
 import com.example.RedSismica.Model.EstadoEvento;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.SerieTemporal;
+import com.example.RedSismica.Repository.EventoSismicoRepository;
 import com.example.RedSismica.Service.CambioEstadoService;
 import com.example.RedSismica.Service.ClasificacionService;
 import com.example.RedSismica.Service.EstacionSismologicaService;
@@ -43,6 +45,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/eventos")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http//:http://localhost:5173")
 public class EventoSismicoController {
 
     private final EventoSismicoService eventoService;
@@ -62,15 +65,10 @@ public class EventoSismicoController {
     // 1. Obtener eventos autodetectados y pendientes de revisión
     @GetMapping("/pendientes")
     public ResponseEntity<List<EventoSismicoDTO>> obtenerEventosPendientes() {
-        List<EventoSismico> eventos = eventoService.buscarAutoDetectados()
-            .stream()
-            .filter(e -> e.esAutoDetectado() || e.esPendienteRevision())
-            .collect(Collectors.toList());
-
+        List<EventoSismico> eventos = eventoService.buscarPendientes();
         List<EventoSismicoDTO> dtoList = eventos.stream()
             .map(eventoMapper::toDTO)
             .collect(Collectors.toList());
-
         return ResponseEntity.ok(dtoList);
     }
 

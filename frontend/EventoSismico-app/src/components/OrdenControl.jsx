@@ -31,17 +31,16 @@ function OrdenControl() {
     // Fetch pending events
     const fetchEventos = async () => {
       try {
-        const response = await axios.get('/api/eventos/pendientes', {
+        await axios.get('/api/eventos/pendientes', {
           headers: { Authorization: `Bearer ${token}` },
-        });
-        setEventos(response.data);
+        }).then(res => setEventos(res.data));
       } catch (err) {
         setError('Error al cargar los eventos pendientes');
         console.error('Error fetching events:', err);
       }
     };
 
-    fetchEventos();
+    fetchEventos(); 
 
     // Update time
     const updateTime = () => {
@@ -114,6 +113,7 @@ function OrdenControl() {
   };
 
   return (
+    
     <div className="min-h-screen flex flex-col bg-gray-100 p-6">
       <div className="flex justify-between bg-gray-300 p-4 rounded-t-lg">
         <span>{username}</span>
@@ -144,7 +144,7 @@ function OrdenControl() {
                 }`}
                 onClick={() => setSelectedEvento(evento)}
               >
-                Evento {evento.id} - {format(new Date(evento.fechaHoraOcurrencia), 'dd/MM/yyyy HH:mm')}
+                
                 <div className="text-xs text-gray-700">
                   Estado: {evento.estadoEventoId === 1 ? 'AutoDetectado' : evento.estadoEventoId === 2 ? 'PendienteRevision' : 'Otro'}
                 </div>
