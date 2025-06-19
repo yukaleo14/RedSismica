@@ -25,4 +25,6 @@ public class EventoSismicoDTO {
     private Long estadoEventoId;
     private Long serieTemporalId;
     private Long clasificacionId;
+    private Boolean autoDetectado;
+    private Boolean pendienteRevision;
 }

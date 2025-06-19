@@ -54,8 +54,38 @@ function OrdenControl() {
     return () => clearInterval(interval);
   }, [navigate]);
 
-  // Fetch detalles y series temporales al seleccionar evento
   useEffect(() => {
+  if (selectedEvento) {
+    const token = localStorage.getItem('token');
+    // Obtener detalles del evento
+    fetch(`/api/eventos/${selectedEvento.id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('No autorizado');
+        return res.json();
+      })
+      .then(data => setEventoDetalles(data))
+      .catch(() => setEventoDetalles(null));
+
+    // Obtener series temporales del evento
+    fetch(`/api/series/${selectedEvento.id}/series-temporales`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('No autorizado');
+        return res.json();
+      })
+      .then(data => setSeriesTemporales(data))
+      .catch(() => setSeriesTemporales([]));
+  } else {
+    setEventoDetalles(null);
+    setSeriesTemporales([]);
+  }
+}, [selectedEvento]);
+
+  // Fetch detalles y series temporales al seleccionar evento
+ /*  useEffect(() => {
     const fetchDetallesYSeries = async () => {
       if (!selectedEvento) {
         setEventoDetalles(null);
@@ -79,7 +109,7 @@ function OrdenControl() {
       }
     };
     fetchDetallesYSeries();
-  }, [selectedEvento]);
+  }, [selectedEvento]); */
 
   const handleConfirmObservacion = async () => {
     if (!selectedEvento) return;
@@ -170,36 +200,36 @@ function OrdenControl() {
                 <div><b>Origen:</b> {eventoDetalles?.origenGeneracion}</div>
                 <div><b>Estado:</b> {eventoDetalles?.estadoEventoId}</div>
               </div>
-              <div className="mt-4">
-                <label className="font-medium">Ingresar observación:</label>
-                <textarea
-                  className="w-full border rounded h-24 mt-1 p-2 resize-none"
-                  value={observacion}
-                  onChange={(e) => setObservacion(e.target.value)}
-                />
-                <div className="flex justify-end gap-4 mt-2">
-                  <button
-                    onClick={handleConfirmObservacion}
-                    className="bg-gray-600 text-white hover:bg-gray-700 px-4 py-1 rounded"
-                  >
-                    Confirmar
-                  </button>
-                  <button
-                    onClick={() => setObservacion('')}
-                    className="bg-gray-400 text-white hover:bg-gray-700 px-4 py-1 rounded"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-              <div className="bg-gray-400 rounded p-4 flex items-center justify-between mt-4">
-                <div className="text-white justify-start">Tipo de motivos Fuera de Servicio</div>
-                <div className="text-white bg-gray-700 px-4 py-2 rounded">Motivo 1</div>
-                <button className="bg-gray-300 px-4 hover:bg-gray-700 py-2 rounded">Comentario</button>
-              </div>
             </div>
           )}
-          {/* Parte inferior: detalles del sismo y series temporales */}
+          
+        </div>
+        {/* Derecha: situación sismógrafo */}
+        <div className="bg-gray-200 p-4 rounded-lg w-1/4 flex flex-col justify-between">
+          <div>
+            <h3 className="font-medium mb-2">Situación Evento Sismico</h3>
+            {[0, 1, 2, 3, 4].map((id) => (
+              <div key={id} className="flex items-center gap-2 mb-2">
+                <div
+                  className={`w-4 h-4 rounded-full border cursor-pointer ${
+                    estadoSismografo === id ? 'bg-green-600 border-black' : 'bg-gray-400'
+                  }`}
+                  onClick={() => setEstadoEvento(id)}
+                />
+                <span>Estado {id}</span>
+              </div>
+            ))}
+            <button
+              onClick={handleUpdateEstado}
+              className="bg-gray-600 text-white w-full hover:bg-gray-700 mt-2 py-1 rounded"
+            >
+              Actualizar
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="full flex justify-center mt-4">
+        {/* Parte inferior: detalles del sismo y series temporales */}
           <div className="mt-4 bg-white rounded shadow p-4">
             {!selectedEvento ? (
               <span className="text-gray-500">Seleccione un evento para ver los datos detallados del sismo y sus series temporales</span>
@@ -241,37 +271,13 @@ function OrdenControl() {
               </>
             )}
           </div>
-        </div>
-        {/* Derecha: situación sismógrafo */}
-        <div className="bg-gray-200 p-4 rounded-lg w-1/4 flex flex-col justify-between">
-          <div>
-            <h3 className="font-medium mb-2">Situación Evento Sismico</h3>
-            {[0, 1, 2, 3, 4].map((id) => (
-              <div key={id} className="flex items-center gap-2 mb-2">
-                <div
-                  className={`w-4 h-4 rounded-full border cursor-pointer ${
-                    estadoSismografo === id ? 'bg-green-600 border-black' : 'bg-gray-400'
-                  }`}
-                  onClick={() => setEstadoEvento(id)}
-                />
-                <span>Estado {id}</span>
-              </div>
-            ))}
-            <button
-              onClick={handleUpdateEstado}
-              className="bg-gray-600 text-white w-full hover:bg-gray-700 mt-2 py-1 rounded"
-            >
-              Actualizar
-            </button>
-          </div>
-        </div>
       </div>
       {/* Botón Generar Simograma debajo de todo */}
       <div className="flex justify-center mt-8">
         <button className="bg-blue-600 text-white hover:bg-blue-800 px-8 py-3 rounded text-lg shadow">
           Generar Simograma
         </button>
-      </div>
+        </div>
     </div>
   );
 }
