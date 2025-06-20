@@ -42,6 +42,7 @@ function OrdenControl() {
 
     fetchEventos(); 
 
+
     // Update time
     const updateTime = () => {
       const now = new Date();
@@ -53,6 +54,7 @@ function OrdenControl() {
     const interval = setInterval(updateTime, 10000);
     return () => clearInterval(interval);
   }, [navigate]);
+  
 
   useEffect(() => {
   if (selectedEvento) {
@@ -110,6 +112,10 @@ function OrdenControl() {
     };
     fetchDetallesYSeries();
   }, [selectedEvento]); */
+
+  // Estado seleccionado para marcar
+  const estadoActualId = selectedEvento ? eventoDetalles?.estadoEventoId : null;
+
 
   const handleConfirmObservacion = async () => {
     if (!selectedEvento) return;
@@ -208,7 +214,7 @@ function OrdenControl() {
         <div className="bg-gray-200 p-4 rounded-lg w-1/4 flex flex-col justify-between">
           <div>
             <h3 className="font-medium mb-2">Situación Evento Sismico</h3>
-            {[0, 1, 2, 3, 4].map((id) => (
+            {["Pendiente Revision","Autodetectado", "Bloqueado En Revision", "Rechazado"].map((id) => (
               <div key={id} className="flex items-center gap-2 mb-2">
                 <div
                   className={`w-4 h-4 rounded-full border cursor-pointer ${

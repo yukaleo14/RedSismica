@@ -53,8 +53,8 @@ public class EstadoEvento {
     }
 
 
-    public boolean esBloqueadoEnPeticion() {
-        if (nombre.equals("BloqueadoEnPeticion")) {
+    public boolean esBloqueadoEnRevision() {
+        if (nombre.equals("BloqueadoEnRevision")) {
             return true;
         } else {
             return false;
