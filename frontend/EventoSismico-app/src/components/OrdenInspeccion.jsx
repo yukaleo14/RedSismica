@@ -15,7 +15,7 @@ function OrdenInspeccion() {
             onClick={handleCerrar}
             className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
           >
-            Cerrar Orden de Inspección
+            Registrar resultado de revisión manual
           </button>
         </div>
         <div className="w-40 h-48 bg-gray-300 rounded-xl flex items-center justify-center">
