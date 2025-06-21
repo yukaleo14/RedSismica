@@ -70,7 +70,6 @@ public class EstadoEvento {
     }
 
     public boolean esActual() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'esActual'");
     }
 

@@ -53,12 +53,10 @@ public class EventoSismicoService {
     }
 
     public void asociarClasificacion(Long id, Clasificacion guardada) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'asociarClasificacion'");
     }
 
     public EventoSismico getById(Long id) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 }

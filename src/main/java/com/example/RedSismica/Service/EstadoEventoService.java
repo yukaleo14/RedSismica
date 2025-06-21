@@ -11,7 +11,6 @@ public class EstadoEventoService {
     }
 
     public EstadoEvento getById(Long nuevoEstadoId) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 }

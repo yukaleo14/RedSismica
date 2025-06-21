@@ -31,7 +31,6 @@ import com.example.RedSismica.Model.Clasificacion;
 import com.example.RedSismica.Model.EstadoEvento;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.SerieTemporal;
-import com.example.RedSismica.Repository.EventoSismicoRepository;
 import com.example.RedSismica.Service.CambioEstadoService;
 import com.example.RedSismica.Service.ClasificacionService;
 import com.example.RedSismica.Service.EstacionSismologicaService;
