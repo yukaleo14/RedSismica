@@ -22,6 +22,8 @@ function OrdenControl() {
     'Autodetectado': 2,
     'Bloqueado En Revision': 3,
     'Rechazado': 4,
+    'Confirmado': 5,
+    'Derivado a Experto': 6,
   };
 
   const formatDate = (dateString) => {
@@ -158,7 +160,6 @@ function OrdenControl() {
   const handleConfirmSelection = () => {
     setConfirmedEvento(selectedEvento);
     setEstadoSismografo('Bloqueado En Revision');
-    // Actualizar el estado del evento seleccionado
     setEventos(prevEventos =>
       prevEventos.map(evento =>
         evento.id === selectedEvento.id ? { ...evento, estadoEventoId: 3 } : evento
@@ -171,7 +172,6 @@ function OrdenControl() {
     setActionCompleted(true);
     setConfirmedEvento(null);
     setEstadoSismografo(newState);
-    // Actualizar el estado del evento seleccionado
     setEventos(prevEventos =>
       prevEventos.map(evento =>
         evento.id === selectedEvento.id ? { ...evento, estadoEventoId: estadoMap[newState] } : evento
@@ -185,14 +185,16 @@ function OrdenControl() {
       responsable: username,
       fechaHoraRevision: format(new Date(), 'dd/MM/yyyy HH:mm'),
     };
-    setEstadoSismografo('Rechazado');
-    // Actualizar el evento seleccionado con revisionData
+    setEstadoSismografo('Rechazado'); // Fijar estado a 'Rechazado'
     setEventos(prevEventos =>
       prevEventos.map(evento =>
-        evento.id === selectedEvento.id ? { ...evento, revisionData, estadoEventoId: 4 } : evento
+        evento.id === selectedEvento.id
+          ? { ...evento, revisionData, estadoEventoId: 4 } // Cambiar a Rechazado (ID 4)
+          : evento
       )
     );
-    handleFinalAction('Autodetectado'); // Restablece a Autodetectado después de rechazar
+    setActionCompleted(true); // Liberar la selección después de rechazar
+    setConfirmedEvento(null); // Desactivar confirmedEvento para permitir seleccionar otro
     alert('Evento rechazado y actualizado.');
   };
 
@@ -201,13 +203,12 @@ function OrdenControl() {
       responsable: username,
       fechaHoraRevision: format(new Date(), 'dd/MM/yyyy HH:mm'),
     };
-    // Actualizar el evento seleccionado con revisionData
     setEventos(prevEventos =>
       prevEventos.map(evento =>
-        evento.id === selectedEvento.id ? { ...evento, revisionData, estadoEventoId: 2 } : evento
+        evento.id === selectedEvento.id ? { ...evento, revisionData, estadoEventoId: 5 } : evento // Cambiar a Confirmado (ID 5)
       )
     );
-    handleFinalAction('Autodetectado');
+    handleFinalAction('Confirmado');
     alert('Evento confirmado');
   };
 
@@ -216,14 +217,34 @@ function OrdenControl() {
       responsable: username,
       fechaHoraRevision: format(new Date(), 'dd/MM/yyyy HH:mm'),
     };
-    // Actualizar el evento seleccionado con revisionData
     setEventos(prevEventos =>
       prevEventos.map(evento =>
-        evento.id === selectedEvento.id ? { ...evento, revisionData, estadoEventoId: 2 } : evento
+        evento.id === selectedEvento.id ? { ...evento, revisionData, estadoEventoId: 6 } : evento // Cambiar a Derivado a Experto (ID 6)
       )
     );
-    handleFinalAction('Autodetectado');
+    handleFinalAction('Derivado a Experto');
     alert('Revisión solicitada a experto');
+  };
+
+  const handleCancelOperation = () => {
+    if (confirmedEvento && estadoSismografo === 'Bloqueado En Revision') {
+      setEstadoSismografo('Autodetectado');
+      setEventos(prevEventos =>
+        prevEventos.map(evento =>
+          evento.id === selectedEvento.id ? { ...evento, estadoEventoId: 2, revisionData: null } : evento
+        )
+      );
+      setConfirmedEvento(null);
+      setActionCompleted(true);
+      alert('Operación cancelada. Estado restaurado a Autodetectado.');
+      // Restaurar datos originales (simplificado; ajusta según tu lógica de datos originales)
+      setEventoDetalles(prevDetalles => ({
+        ...prevDetalles,
+        magnitud: selectedEvento.magnitud || prevDetalles?.magnitud,
+        alcance: selectedEvento.alcance || prevDetalles?.alcance,
+        origenGeneracion: selectedEvento.origenGeneracion || prevDetalles?.origenGeneracion,
+      }));
+    }
   };
 
   return (
@@ -257,8 +278,11 @@ function OrdenControl() {
                 onClick={() => {
                   if (!confirmedEvento || actionCompleted) {
                     setSelectedEvento(evento);
-                    setEstadoSismografo(estadoMap[evento.estadoEventoId] ? Object.keys(estadoMap)[evento.estadoEventoId - 1] : 'Autodetectado');
+                    // Usar el estado actual del evento desde estadoEventoId
+                    const currentState = Object.keys(estadoMap).find(key => estadoMap[key] === evento.estadoEventoId) || 'Autodetectado';
+                    setEstadoSismografo(currentState);
                     setActionCompleted(false);
+                    setConfirmedEvento(null); // Asegurar que se libere al cambiar de evento
                   }
                 }}
                 disabled={confirmedEvento && !actionCompleted}
@@ -310,7 +334,7 @@ function OrdenControl() {
         <div className="bg-gray-200 p-4 rounded-lg w-1/4 flex flex-col justify-between">
           <div>
             <h3 className="font-medium mb-2">Situación Evento Sismico</h3>
-            {["Pendiente", "Autodetectado", "Bloqueado En Revision", "Rechazado"].map((estado) => (
+            {Object.keys(estadoMap).map((estado) => (
               <div key={estado} className="flex items-center gap-2 mb-2">
                 <span
                   className={`px-2 py-1 rounded ${
@@ -319,6 +343,10 @@ function OrdenControl() {
                         ? 'bg-red-600 text-white'
                         : estado === 'Rechazado'
                         ? 'bg-green-600 text-white'
+                        : estado === 'Confirmado'
+                        ? 'bg-blue-600 text-white'
+                        : estado === 'Derivado a Experto'
+                        ? 'bg-purple-600 text-white'
                         : 'bg-[#ADBAC0] text-white'
                       : 'bg-[#373737] text-white'
                   }`}
@@ -353,6 +381,15 @@ function OrdenControl() {
                   disabled={!confirmedEvento}
                 >
                   Modificar Magnitud, Alcance y Origen
+                </button>
+                <button
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
+                    confirmedEvento && estadoSismografo === 'Bloqueado En Revision' ? 'bg-gray-600 hover:bg-gray-800' : 'bg-[#373737]'
+                  }`}
+                  onClick={handleCancelOperation}
+                  disabled={!confirmedEvento || estadoSismografo !== 'Bloqueado En Revision'}
+                >
+                  Cancelar Operación
                 </button>
               </div>
             </div>
