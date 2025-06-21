@@ -17,7 +17,6 @@ public class CambioEstadoDTO {
     private LocalDateTime fechaHoraFin;
     private Long eventoSismicoId;
     public void setEstadoEventoId(Long id2) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setEstadoEventoId'");
     }
    

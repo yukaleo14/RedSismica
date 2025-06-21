@@ -19,7 +19,6 @@ public class SerieTemporalService {
     }
 
     public SerieTemporal getById(Long idSerie) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 }

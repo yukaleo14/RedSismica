@@ -29,8 +29,7 @@ public class SecurityConfig {
        return http
             .csrf(csrf -> csrf.disable()) //deshabilita la proteccion CSRF, no recomendado para produccion
             .authorizeHttpRequests(authRequest -> authRequest
-                .requestMatchers("/autenticacion/**").permitAll() //permitir todas las peticiones a autenticacion
-                .anyRequest().authenticated() //cualquier peticion que no sea autenticacion debe estar autenticado 
+                .anyRequest().permitAll() //cualquier peticion que no sea autenticacion debe estar autenticado 
             )
             .sessionManagement(sessionManager -> 
             sessionManager
@@ -39,5 +38,6 @@ public class SecurityConfig {
             .addFilterBefore(jwtAutenticacionFiltro, UsernamePasswordAuthenticationFilter.class) //agrega el filtro JWT antes del filtro de autenticacion por nombre de usuario y contraseña
             .build();
     }
+    
 
 }

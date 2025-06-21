@@ -20,11 +20,9 @@ public class EstacionSismologicaDTO {
     private String nroCerificacionAdquisicion;
     
     public void setId(Object id) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setId'");
     }
     public Object getId() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getId'");
     }
 }

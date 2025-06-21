@@ -53,8 +53,8 @@ public class EstadoEvento {
     }
 
 
-    public boolean esBloqueadoEnRevision() {
-        if (nombre.equals("BloqueadoEnRevision")) {
+    public boolean esBloqueadoEnPeticion() {
+        if (nombre.equals("BloqueadoEnPeticion")) {
             return true;
         } else {
             return false;
@@ -70,7 +70,6 @@ public class EstadoEvento {
     }
 
     public boolean esActual() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'esActual'");
     }
 
