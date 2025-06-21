@@ -27,4 +27,7 @@ public class EventoSismicoDTO {
     private Long clasificacionId;
     private Boolean autoDetectado;
     private Boolean pendienteRevision;
+    public Object getResponsableRevision() {
+        throw new UnsupportedOperationException("Unimplemented method 'getResponsableRevision'");
+    }
 }

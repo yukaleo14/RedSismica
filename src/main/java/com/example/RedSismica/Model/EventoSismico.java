@@ -58,6 +58,14 @@ public class EventoSismico {
         throw new UnsupportedOperationException("Unimplemented method 'bloquear'");
     }
 
+    public void setFechaHoraRevision(LocalDateTime now) {
+        throw new UnsupportedOperationException("Unimplemented method 'setFechaHoraRevision'");
+    }
+
+    public void setResponsableRevision(Object responsableRevision) {
+        throw new UnsupportedOperationException("Unimplemented method 'setResponsableRevision'");
+    }
+
 }
 
 

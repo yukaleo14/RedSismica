@@ -2,13 +2,16 @@ package com.example.RedSismica.Controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +34,7 @@ import com.example.RedSismica.Model.Clasificacion;
 import com.example.RedSismica.Model.EstadoEvento;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.SerieTemporal;
+import com.example.RedSismica.Repository.EventoSismicoRepository;
 import com.example.RedSismica.Service.CambioEstadoService;
 import com.example.RedSismica.Service.ClasificacionService;
 import com.example.RedSismica.Service.EstacionSismologicaService;
@@ -60,6 +64,7 @@ public class EventoSismicoController {
     private final MuestraSismicaMapper muestraSismicaMapper;
     private final EstacionSismologicaService estacionService;
     private final EstacionSismologicaMapper estacionMapper;
+    private final EventoSismicoRepository eventoSismicoRepository;
 
     // 1. Obtener eventos autodetectados y pendientes de revisión
     @GetMapping("/pendientes")
@@ -139,6 +144,37 @@ public class EventoSismicoController {
             .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
+
+    //8.Actualizar Datos Específicos de un Evento Sísmico
+     @PutMapping("/{id}")
+    public ResponseEntity<EventoSismico> actualizarEvento(
+            @PathVariable Long id,
+            @RequestBody EventoSismicoDTO eventoDto) {
+
+        Optional<EventoSismico> eventoExistente = eventoSismicoRepository.findById(id);
+
+        if (eventoExistente.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        EventoSismico evento = eventoExistente.get();
+
+        evento.setMagnitud(eventoDto.getMagnitud());
+        evento.setAlcance(eventoDto.getAlcance());
+        evento.setOrigenGeneracion(eventoDto.getOrigenGeneracion());
+
+        // Campos de revisión
+        evento.setFechaHoraRevision(LocalDateTime.now());
+        evento.setResponsableRevision(eventoDto.getResponsableRevision());
+
+        try {
+            EventoSismico eventoActualizado = eventoSismicoRepository.save(evento);
+            return new ResponseEntity<>(eventoActualizado, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
+
 
 
