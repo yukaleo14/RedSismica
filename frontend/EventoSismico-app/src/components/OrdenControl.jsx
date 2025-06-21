@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 
 function OrdenControl() {
   const [eventos, setEventos] = useState([]);
   const [selectedEvento, setSelectedEvento] = useState(null);
   const [observacion, setObservacion] = useState('');
-  const [selectedMotivo, setSelectedMotivo] = useState(null);
   const [estadoSismografo, setEstadoSismografo] = useState(3);
   const [currentTime, setCurrentTime] = useState('');
   const [error, setError] = useState('');
@@ -15,6 +14,49 @@ function OrdenControl() {
   const [seriesTemporales, setSeriesTemporales] = useState([]);
   const [eventoDetalles, setEventoDetalles] = useState(null);
   const navigate = useNavigate();
+
+  // Map state labels to estadoEventoId
+  const estadoMap = {
+    'Pendiente': 1,
+    'Autodetectado': 2,
+    'Bloqueado En Revision': 3,
+    'Rechazado': 4,
+  };
+
+  // Utility to format dates safely
+  const formatDate = (dateString) => {
+  if (!dateString) return '';
+
+  // Handle comma-separated format like "2025,6,20,12,0"
+  if (typeof dateString === 'string' && dateString.includes(',')) {
+    try {
+      const parts = dateString.split(',').map(Number);
+      if (parts.length !== 5) {
+        console.warn(`Invalid date parts: ${dateString}`);
+        return 'Fecha inválida';
+      }
+      const [year, month, day, hour, minute] = parts;
+      // JavaScript months are 0-based, so subtract 1 from month
+      const date = new Date(year, month - 1, day, hour, minute);
+      if (!isValid(date)) {
+        console.warn(`Invalid parsed date: ${dateString}`);
+        return 'Fecha inválida';
+      }
+      return format(date, 'dd/MM/yyyy HH:mm');
+    } catch (err) {
+      console.warn(`Error parsing date: ${dateString}`, err);
+      return 'Fecha inválida';
+    }
+  }
+
+  // Handle standard date strings
+  const date = new Date(dateString);
+  if (!isValid(date)) {
+    console.warn(`Invalid date: ${dateString}`);
+    return 'Fecha inválida';
+  }
+  return format(date, 'dd/MM/yyyy HH:mm');
+};
 
   useEffect(() => {
     // Fetch username
@@ -31,17 +73,27 @@ function OrdenControl() {
     // Fetch pending events
     const fetchEventos = async () => {
       try {
-        await axios.get('/api/eventos/pendientes', {
+        const response = await axios.get('/api/eventos/pendientes', {
           headers: { Authorization: `Bearer ${token}` },
-        }).then(res => setEventos(res.data));
+        });
+        console.log('Eventos pendientes response:', JSON.stringify(response.data, null, 2)); // Detailed log
+        setEventos(response.data);
       } catch (err) {
-        setError('Error al cargar los eventos pendientes');
-        console.error('Error fetching events:', err);
+        if (err.response?.status === 403) {
+          setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+          setTimeout(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            navigate('/login');
+          }, 3000); // Delay redirect to show error
+        } else {
+          setError('Error al cargar los eventos pendientes');
+          console.error('Error fetching events:', err);
+        }
       }
     };
 
-    fetchEventos(); 
-
+    fetchEventos();
 
     // Update time
     const updateTime = () => {
@@ -54,68 +106,67 @@ function OrdenControl() {
     const interval = setInterval(updateTime, 10000);
     return () => clearInterval(interval);
   }, [navigate]);
-  
 
   useEffect(() => {
-  if (selectedEvento) {
+    if (!selectedEvento) {
+      setEventoDetalles(null);
+      setSeriesTemporales([]);
+      return;
+    }
+
     const token = localStorage.getItem('token');
-    // Obtener detalles del evento
-    fetch(`/api/eventos/${selectedEvento.id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('No autorizado');
-        return res.json();
-      })
-      .then(data => setEventoDetalles(data))
-      .catch(() => setEventoDetalles(null));
 
-    // Obtener series temporales del evento
-    fetch(`/api/series/${selectedEvento.id}/series-temporales`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('No autorizado');
-        return res.json();
-      })
-      .then(data => setSeriesTemporales(data))
-      .catch(() => setSeriesTemporales([]));
-  } else {
-    setEventoDetalles(null);
-    setSeriesTemporales([]);
-  }
-}, [selectedEvento]);
-
-  // Fetch detalles y series temporales al seleccionar evento
- /*  useEffect(() => {
-    const fetchDetallesYSeries = async () => {
-      if (!selectedEvento) {
-        setEventoDetalles(null);
-        setSeriesTemporales([]);
-        return;
-      }
+    // Fetch event details
+    const fetchEventoDetalles = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const [detallesRes, seriesRes] = await Promise.all([
-          axios.get(`/api/eventos/${selectedEvento.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`/api/eventos/${selectedEvento.id}/series-temporales`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-        setEventoDetalles(detallesRes.data);
-        setSeriesTemporales(seriesRes.data);
+        const response = await axios.get(`/api/eventos/${selectedEvento.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log('Evento detalles response:', response.data); // Debug log
+        setEventoDetalles(response.data);
       } catch (err) {
-        setError('Error al cargar detalles del evento');
+        if (err.response?.status === 403) {
+          setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+          setTimeout(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            navigate('/login');
+          }, 3000); // Delay redirect to show error
+        } else {
+          setError('Error al cargar los detalles del evento');
+          console.error('Error fetching event details:', err);
+          setEventoDetalles(null);
+        }
       }
     };
-    fetchDetallesYSeries();
-  }, [selectedEvento]); */
 
-  // Estado seleccionado para marcar
-  const estadoActualId = selectedEvento ? eventoDetalles?.estadoEventoId : null;
+    // Fetch time series
+    const fetchSeriesTemporales = async () => {
+      try {
+        const response = await axios.get(`/api/eventos/${selectedEvento.id}/series-temporales`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log('Series temporales response:', response.data); // Debug log
+        setSeriesTemporales(response.data);
+      } catch (err) {
+        if (err.response?.status === 403) {
+          setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+          setTimeout(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            navigate('/login');
+          }, 3000); // Delay redirect to show error
+        } else {
+          setError('Error al cargar las series temporales');
+          console.error('Error fetching time series:', err);
+          setSeriesTemporales([]);
+        }
+      }
+    };
 
+    fetchEventoDetalles();
+    fetchSeriesTemporales();
+  }, [selectedEvento, navigate]);
 
   const handleConfirmObservacion = async () => {
     if (!selectedEvento) return;
@@ -128,28 +179,30 @@ function OrdenControl() {
       alert('Observación guardada');
     } catch (err) {
       setError('Error al guardar la observación');
+      console.error('Error saving observation:', err);
     }
   };
 
   const handleUpdateEstado = async () => {
     if (!selectedEvento) return;
     try {
+      const nuevoEstadoId = estadoMap[estadoSismografo] || estadoSismografo;
       await axios.post(
         `/api/eventos/${selectedEvento.id}/cambiar-estado`,
         {},
         {
-          params: { nuevoEstadoId: estadoSismografo },
+          params: { nuevoEstadoId },
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }
       );
       alert('Estado actualizado');
     } catch (err) {
       setError('Error al actualizar el estado');
+      console.error('Error updating state:', err);
     }
   };
 
   return (
-    
     <div className="min-h-screen flex flex-col bg-gray-100 p-6">
       <div className="flex justify-between bg-gray-300 p-4 rounded-t-lg">
         <span>{username}</span>
@@ -180,9 +233,9 @@ function OrdenControl() {
                 }`}
                 onClick={() => setSelectedEvento(evento)}
               >
-                
+                Evento {evento.id} - {formatDate(evento.fechaHoraOcurrencia)}
                 <div className="text-xs text-gray-700">
-                  Estado: {evento.estadoEventoId === 1 ? 'AutoDetectado' : evento.estadoEventoId === 2 ? 'PendienteRevision' : 'Otro'}
+                  Estado: {evento.estadoEventoId === 1 ? 'Pendiente' : evento.estadoEventoId === 2 ? 'Autodetectado' : 'Otro'}
                 </div>
               </button>
             ))
@@ -198,31 +251,43 @@ function OrdenControl() {
           ) : (
             <div className="flex-1 flex flex-col gap-2 bg-white rounded shadow p-4">
               <h2 className="font-bold text-lg mb-2">Datos del Evento Sísmico</h2>
-              <div className="grid grid-cols-2 gap-2">
-                <div><b>ID:</b> {eventoDetalles?.id}</div>
-                <div><b>Fecha/Hora:</b> {eventoDetalles?.fechaHoraOcurrencia ? format(new Date(eventoDetalles.fechaHoraOcurrencia), 'dd/MM/yyyy HH:mm') : ''}</div>
-                <div><b>Magnitud:</b> {eventoDetalles?.magnitud}</div>
-                <div><b>Alcance:</b> {eventoDetalles?.alcance}</div>
-                <div><b>Origen:</b> {eventoDetalles?.origenGeneracion}</div>
-                <div><b>Estado:</b> {eventoDetalles?.estadoEventoId}</div>
-              </div>
+              {eventoDetalles ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <div><b>ID:</b> {eventoDetalles.id}</div>
+                  <div>
+                    <b>Fecha/Hora:</b> {formatDate(eventoDetalles.fechaHoraOcurrencia)}
+                  </div>
+                  <div><b>Magnitud:</b> {eventoDetalles.magnitud || 'N/A'}</div>
+                  <div><b>Alcance:</b> {eventoDetalles.alcance || 'N/A'}</div>
+                  <div><b>Origen:</b> {eventoDetalles.origenGeneracion || 'N/A'}</div>
+                  <div>
+                    <b>Estado:</b>{' '}
+                    {eventoDetalles.estadoEventoId === 1
+                      ? 'Pendiente'
+                      : eventoDetalles.estadoEventoId === 2
+                      ? 'Autodetectado'
+                      : 'Otro'}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-500">Cargando detalles...</p>
+              )}
             </div>
           )}
-          
         </div>
         {/* Derecha: situación sismógrafo */}
         <div className="bg-gray-200 p-4 rounded-lg w-1/4 flex flex-col justify-between">
           <div>
-            <h3 className="font-medium mb-2">Situación Evento Sismico</h3>
-            {["Pendiente Revision","Autodetectado", "Bloqueado En Revision", "Rechazado"].map((id) => (
-              <div key={id} className="flex items-center gap-2 mb-2">
+            <h3 className="font-medium mb-2">Situación Evento Sísmico</h3>
+            {['Pendiente', 'Autodetectado', 'Bloqueado En Revision', 'Rechazado'].map((estado) => (
+              <div key={estado} className="flex items-center gap-2 mb-2">
                 <div
                   className={`w-4 h-4 rounded-full border cursor-pointer ${
-                    estadoSismografo === id ? 'bg-green-600 border-black' : 'bg-gray-400'
+                    estadoSismografo === estado ? 'bg-green-600 border-black' : 'bg-gray-400'
                   }`}
-                  onClick={() => setEstadoEvento(id)}
+                  onClick={() => setEstadoSismografo(estado)}
                 />
-                <span>Estado {id}</span>
+                <span>{estado}</span>
               </div>
             ))}
             <button
@@ -234,56 +299,62 @@ function OrdenControl() {
           </div>
         </div>
       </div>
-      <div className="full flex justify-center mt-4">
+      <div className="w-full flex justify-center mt-4">
         {/* Parte inferior: detalles del sismo y series temporales */}
-          <div className="mt-4 bg-white rounded shadow p-4">
-            {!selectedEvento ? (
-              <span className="text-gray-500">Seleccione un evento para ver los datos detallados del sismo y sus series temporales</span>
-            ) : (
-              <>
-                <h3 className="font-semibold mb-2">Datos Detallados del Sismo</h3>
+        <div className="mt-4 bg-white rounded shadow p-4 w-full">
+          {!selectedEvento ? (
+            <span className="text-gray-500">Seleccione un evento para ver los datos detallados del sismo y sus series temporales</span>
+          ) : (
+            <>
+              <h3 className="font-semibold mb-2">Datos Detallados del Sismo</h3>
+              {eventoDetalles ? (
                 <div className="grid grid-cols-2 gap-2 mb-2">
-                  <div><b>Latitud Epicentro:</b> {eventoDetalles?.latitudEpicentro}</div>
-                  <div><b>Longitud Epicentro:</b> {eventoDetalles?.longitudEpicentro}</div>
-                  <div><b>Latitud Hipocentro:</b> {eventoDetalles?.latitudHipocentro}</div>
-                  <div><b>Longitud Hipocentro:</b> {eventoDetalles?.longitudHipocentro}</div>
-                  <div><b>Fecha Fin:</b> {eventoDetalles?.fechaHoraFin ? format(new Date(eventoDetalles.fechaHoraFin), 'dd/MM/yyyy HH:mm') : ''}</div>
+                  <div><b>Latitud Epicentro:</b> {eventoDetalles.latitudEpicentro || 'N/A'}</div>
+                  <div><b>Longitud Epicentro:</b> {eventoDetalles.longitudEpicentro || 'N/A'}</div>
+                  <div><b>Latitud Hipocentro:</b> {eventoDetalles.latitudHipocentro || 'N/A'}</div>
+                  <div><b>Longitud Hipocentro:</b> {eventoDetalles.longitudHipocentro || 'N/A'}</div>
+                  <div>
+                    <b>Fecha Fin:</b> {formatDate(eventoDetalles.fechaHoraFin)}
+                  </div>
                 </div>
-                <h4 className="font-semibold mt-4 mb-2">Series Temporales</h4>
-                {seriesTemporales.length === 0 ? (
-                  <span className="text-gray-500">No hay series temporales para este evento</span>
-                ) : (
-                  <table className="w-full text-sm border">
-                    <thead>
-                      <tr className="bg-gray-200">
-                        <th>ID</th>
-                        <th>Frecuencia Muestreo</th>
-                        <th>Condición Alarma</th>
-                        <th>Fecha Registro</th>
+              ) : (
+                <p className="text-gray-500">Cargando datos detallados...</p>
+              )}
+              <h4 className="font-semibold mt-4 mb-2">Series Temporales</h4>
+              {seriesTemporales.length === 0 ? (
+                <span className="text-gray-500">No hay series temporales para este evento</span>
+              ) : (
+                <table className="w-full text-sm border">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th>ID</th>
+                      <th>Frecuencia Muestreo</th>
+                      <th>Condición Alarma</th>
+                      <th>Fecha Registro</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {seriesTemporales.map((serie) => (
+                      <tr key={serie.id} className="border-t">
+                        <td>{serie.id}</td>
+                        <td>{serie.frecuenciaMuestreo || 'N/A'}</td>
+                        <td>{serie.condicionAlarma || 'N/A'}</td>
+                        <td>{formatDate(serie.fechaHoraRegistroMuestra)}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {seriesTemporales.map((serie) => (
-                        <tr key={serie.id} className="border-t">
-                          <td>{serie.id}</td>
-                          <td>{serie.frecuenciaMuestreo}</td>
-                          <td>{serie.condicionAlarma}</td>
-                          <td>{serie.fechaHoraRegistroMuestra ? format(new Date(serie.fechaHoraRegistroMuestra), 'dd/MM/yyyy HH:mm') : ''}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </>
-            )}
-          </div>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
+          )}
+        </div>
       </div>
-      {/* Botón Generar Simograma debajo de todo */}
+      {/* Botón Generar Simograma */}
       <div className="flex justify-center mt-8">
         <button className="bg-blue-600 text-white hover:bg-blue-800 px-8 py-3 rounded text-lg shadow">
           Generar Simograma
         </button>
-        </div>
+      </div>
     </div>
   );
 }
