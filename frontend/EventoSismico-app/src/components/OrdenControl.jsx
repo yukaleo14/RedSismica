@@ -246,15 +246,13 @@ function OrdenControl() {
               <div className="grid grid-cols-2 gap-2">
                 <div><b>ID:</b> {eventoDetalles?.id}</div>
                 <div><b>Fecha/Hora:</b> {formatDate(eventoDetalles?.fechaHoraOcurrencia)}</div>
-                <div><b>Alcance:</b> {eventoDetalles?.alcance}</div>
-                <div><b>Origen de Generación:</b> {eventoDetalles?.origenGeneracion}</div>
-                <div><b>Clasificación:</b> {eventoDetalles?.clasificacion}</div>
+                <div><b>Ubicación:</b> {eventoDetalles?.ubicacion}</div>
                 <div><b>Magnitud:</b> {eventoDetalles?.magnitud}</div>
               </div>
               {revisionData && (
                 <div className="mt-2 p-2 bg-gray-100 rounded">
-                  <div><b>-> Responsable:</b> {revisionData.responsable}</div>
-                  <div><b>-> Fecha y Hora Revisión:</b> {revisionData.fechaHoraRevision}</div>
+                  <div><b> Responsable:</b> {revisionData.responsable}</div>
+                  <div><b> Fecha y Hora Revisión:</b> {revisionData.fechaHoraRevision}</div>
                 </div>
               )}
             </div>
