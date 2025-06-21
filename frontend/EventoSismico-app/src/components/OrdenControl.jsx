@@ -24,36 +24,37 @@ function OrdenControl() {
     'Rechazado': 4,
   };
 
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
-  if (Array.isArray(dateString)) {
+  // Utility to format dates safely
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    if (Array.isArray(dateString)) {
+      try {
+        const [year, month, day, hour, minute] = dateString.map(Number);
+        const date = new Date(year, month - 1, day, hour, minute);
+        if (!isValid(date)) {
+          console.warn(`Invalid parsed date: ${dateString}`);
+          return 'Fecha inválida';
+        }
+        return format(date, 'dd/MM/yyyy HH:mm');
+      } catch (err) {
+        console.warn(`Error parsing array date: ${dateString}`, err);
+        return 'Fecha inválida';
+      }
+    }
+
+    // Handle ISO string or other standard date formats
     try {
-      const [year, month, day, hour, minute] = dateString.map(Number);
-      const date = new Date(year, month - 1, day, hour, minute);
+      const date = new Date(dateString);
       if (!isValid(date)) {
-        console.warn(`Invalid parsed date: ${dateString}`);
+        console.warn(`Invalid date: ${dateString}`);
         return 'Fecha inválida';
       }
       return format(date, 'dd/MM/yyyy HH:mm');
     } catch (err) {
-      console.warn(`Error parsing array date: ${dateString}`, err);
+      console.warn(`Error parsing date: ${dateString}`, err);
       return 'Fecha inválida';
     }
-  }
-
-  // Handle ISO string or other standard date formats
-  try {
-    const date = new Date(dateString);
-    if (!isValid(date)) {
-      console.warn(`Invalid date: ${dateString}`);
-      return 'Fecha inválida';
-    }
-    return format(date, 'dd/MM/yyyy HH:mm');
-  } catch (err) {
-    console.warn(`Error parsing date: ${dateString}`, err);
-    return 'Fecha inválida';
-  }
-};
+  };
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username') || 'Usuario';
@@ -94,12 +95,12 @@ const formatDate = (dateString) => {
       console.log('No evento seleccionado');
       setEventoDetalles(null);
       setSeriesTemporales([]);
+      return;
     }
 
     const token = localStorage.getItem('token');
-    
+    console.log('Fetching details for evento ID:', selectedEvento.id);
 
-    // Fetch event details
     const fetchEventoDetalles = async () => {
       try {
         const response = await axios.get(`/api/eventos/${selectedEvento.id}`, {
@@ -118,13 +119,11 @@ const formatDate = (dateString) => {
           }, 3000); // Delay redirect to show error
         } else {
           setError('Error al cargar los detalles del evento');
-          console.error('Error fetching event details:', err);
           setEventoDetalles(null);
         }
       }
     };
 
-    // Fetch time series
     const fetchSeriesTemporales = async () => {
       try {
         const response = await axios.get(`/api/eventos/${selectedEvento.id}/series-temporales`, {
@@ -143,7 +142,6 @@ const formatDate = (dateString) => {
           }, 3000); // Delay redirect to show error
         } else {
           setError('Error al cargar las series temporales');
-          console.error('Error fetching time series:', err);
           setSeriesTemporales([]);
         }
       }
@@ -232,7 +230,7 @@ const formatDate = (dateString) => {
               <h2 className="font-bold text-lg mb-2">Datos del Evento Sísmico</h2>
               <div className="grid grid-cols-2 gap-2">
                 <div><b>ID:</b> {eventoDetalles?.id}</div>
-                <div><b>Fecha/Hora:</b> {eventoDetalles?.fechaHoraOcurrencia ? format(new Date(eventoDetalles.fechaHoraOcurrencia), 'dd/MM/yyyy HH:mm') : ''}</div>
+                <div><b>Fecha/Hora:</b> {eventoDetalles?.fechaHoraOcurrencia ? formatDate(eventoDetalles.fechaHoraOcurrencia) : ''}</div>
                 <div><b>Origen:</b> {eventoDetalles?.origenGeneracion}</div>
                 <div><b>Magnitud:</b> {eventoDetalles?.magnitud}</div>
               </div>
@@ -248,75 +246,102 @@ const formatDate = (dateString) => {
                   className={`w-4 h-4 rounded-full border cursor-pointer ${
                     estadoSismografo === id ? 'bg-green-600 border-black' : 'bg-gray-400'
                   }`}
-                  onClick={() => setEstadoSismografo(id)} // Corrección aquí
+                  onClick={() => setEstadoSismografo(id)}
                 />
                 <span>Estado {id}</span>
               </div>
             ))}
-            <button
-              onClick={handleUpdateEstado}
-              className="bg-gray-600 text-white w-full hover:bg-gray-700 mt-2 py-1 rounded"
-            >
-              Actualizar
-            </button>
           </div>
         </div>
       </div>
       <div className="mt-4 bg-white rounded shadow p-4 w-full">
-        {!selectedEvento ? (
-          <span className="text-gray-500">Seleccione un evento para ver los datos detallados del sismo y sus series temporales</span>
-        ) : (
-          <div className="grid grid-cols-3 gap-4">
-            {/* Datos Sismo */}
-            <div className="col-span-1">
-              <h3 className="font-semibold mb-2">Datos Sismo</h3>
-              <div className="grid grid-cols-2 gap-2 mb-2">
-                <div><b>Alcance:</b> {eventoDetalles?.alcance}</div>
-                <div><b>Clasificación:</b> {eventoDetalles?.clasificacion}</div>
-                <div><b>Origen de Generación:</b> {eventoDetalles?.origenGeneracion}</div>
-              </div>
+      {!selectedEvento ? (
+        <span className="text-gray-500">Seleccione un evento para ver los datos detallados del sismo y sus series temporales</span>
+      ) : (
+        <div className="grid grid-cols-3 gap-4">
+          {/* Datos Sismo */}
+          <div className="col-span-1">
+            <h3 className="font-semibold mb-2">Datos Sismo</h3>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div><b>Alcance:</b> {eventoDetalles?.alcance || 'N/A'}</div>
+              <div><b>Clasificación:</b> {eventoDetalles?.clasificacion || 'N/A'}</div>
+              <div><b>Origen de Generación:</b> {eventoDetalles?.origenGeneracion || 'N/A'}</div>
             </div>
-            {/* Situación Evento Sísmico (Series Temporales) */}
-            <div className="col-span-1">
-              <h3 className="font-semibold mb-2">Situación Evento Sísmico</h3>
-              {seriesTemporales.length === 0 ? (
-                <p className="text-gray-500">No hay series temporales para este evento</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {seriesTemporales.map((serie) => (
-                    <div key={serie.id} className="border p-2 rounded">
-                      <h4 className="font-medium">Estación: {serie.estacionSismologica}</h4>
-                      <div><b>Velocidad de Onda:</b> {serie.velocidadOnda || 'N/A'}</div>
-                      <div><b>Frecuencia de Onda:</b> {serie.frecuenciaOnda || 'N/A'}</div>
-                      <div><b>Longitud:</b> {serie.longitud || 'N/A'}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            {/* Visualizar Simograma */}
-            <div className="col-span-1">
-              <h3 className="font-semibold mb-2">Visualizar Simograma</h3>
-              <p id="sismograma-output" className="mb-4">No se ha generado el sismograma aún...</p>
-              <div className="mt-4 flex justify-center">
-                <button
-                  className="bg-blue-600 text-white hover:bg-blue-800 px-8 py-3 rounded text-lg shadow"
-                  onClick={() => {
-                    // Llamada simulada al caso de uso Generar Sismograma
-                    const output = document.getElementById('sismograma-output');
-                    output.textContent = 'Generando sismograma...';
-                    setTimeout(() => {
-                      output.textContent = 'Sismograma generado con éxito para las estaciones.';
-                    }, 2000); // Simulación de 2 segundos para generación
-                  }}
-                >
-                  Generar Simograma
-                </button>
-              </div>
+            <div className="mt-4 flex flex-col gap-2">
+              <button
+                className="bg-blue-600 text-white hover:bg-blue-800 px-4 py-2 rounded text-sm"
+                onClick={() => alert('Modificar datos activado')}
+              >
+                Modificar Magnitud, Alcance y Origen
+              </button>
             </div>
           </div>
-        )}
-      </div>
+          {/* Situación Evento Sísmico (Series Temporales) */}
+          <div className="col-span-1">
+            <h3 className="font-semibold mb-2">Situación Evento Sísmico</h3>
+            {seriesTemporales.length === 0 ? (
+              <p className="text-gray-500">No hay series temporales para este evento</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {seriesTemporales.map((serie) => (
+                  <div key={serie.id} className="border p-2 rounded">
+                    <h4 className="font-medium">Estación: {serie.estacionSismologica || 'Sin estación'}</h4>
+                    <div><b>Velocidad de Onda:</b> {serie.velocidadOnda || 'N/A'}</div>
+                    <div><b>Frecuencia de Onda:</b> {serie.frecuenciaOnda || 'N/A'}</div>
+                    <div><b>Longitud:</b> {serie.longitud || 'N/A'}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-4 flex flex-col gap-2">
+              <button
+                className="bg-green-600 text-white hover:bg-green-800 px-4 py-2 rounded text-sm"
+                onClick={() => alert('Confirmar evento')}
+              >
+                Confirmar Evento
+              </button>
+              <button
+                className="bg-red-600 text-white hover:bg-red-800 px-4 py-2 rounded text-sm"
+                onClick={() => alert('Rechazar evento')}
+              >
+                Rechazar Evento
+              </button>
+              <button
+                className="bg-yellow-600 text-white hover:bg-yellow-800 px-4 py-2 rounded text-sm"
+                onClick={() => alert('Solicitar revisión a experto')}
+              >
+                Solicitar Revisión a Experto
+              </button>
+            </div>
+          </div>
+          {/* Visualizar Simograma */}
+          <div className="col-span-1">
+            <h3 className="font-semibold mb-2">Visualizar Simograma</h3>
+            <p id="sismograma-output" className="mb-4">No se ha generado el sismograma aún...</p>
+            <div className="mt-4 flex flex-col gap-2">
+              <button
+                className="bg-blue-600 text-white hover:bg-blue-800 px-4 py-2 rounded text-sm"
+                onClick={() => {
+                  const output = document.getElementById('sismograma-output');
+                  output.textContent = 'Generando sismograma...';
+                  setTimeout(() => {
+                    output.textContent = 'Sismograma generado con éxito para las estaciones.';
+                  }, 2000);
+                }}
+              >
+                Generar Simograma
+              </button>
+              <button
+                className="bg-indigo-600 text-white hover:bg-indigo-800 px-4 py-2 rounded text-sm"
+                onClick={() => alert('Visualizar en mapa')}
+              >
+                Visualizar en Mapa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
     </div>
   );
 }
