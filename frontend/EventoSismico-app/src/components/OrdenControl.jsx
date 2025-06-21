@@ -6,17 +6,18 @@ import { format } from 'date-fns';
 function OrdenControl() {
   const [eventos, setEventos] = useState([]);
   const [selectedEvento, setSelectedEvento] = useState(null);
+  const [confirmedEvento, setConfirmedEvento] = useState(null);
   const [observacion, setObservacion] = useState('');
-  const [selectedMotivo, setSelectedMotivo] = useState(null);
-  const [estadoSismografo, setEstadoSismografo] = useState(3);
+  const [estadoSismografo, setEstadoSismografo] = useState('Pendiente'); // Estado inicial como Pendiente
   const [currentTime, setCurrentTime] = useState('');
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [seriesTemporales, setSeriesTemporales] = useState([]);
   const [eventoDetalles, setEventoDetalles] = useState(null);
+  const [revisionData, setRevisionData] = useState(null);
+  const [actionCompleted, setActionCompleted] = useState(false); // Nuevo estado para rastrear si se completó una acción final
   const navigate = useNavigate();
 
-  // Map state labels to estadoEventoId
   const estadoMap = {
     'Pendiente': 1,
     'Autodetectado': 2,
@@ -24,7 +25,6 @@ function OrdenControl() {
     'Rechazado': 4,
   };
 
-  // Utility to format dates safely
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     if (Array.isArray(dateString)) {
@@ -41,8 +41,6 @@ function OrdenControl() {
         return 'Fecha inválida';
       }
     }
-
-    // Handle ISO string or other standard date formats
     try {
       const date = new Date(dateString);
       if (!isValid(date)) {
@@ -68,9 +66,15 @@ function OrdenControl() {
 
     const fetchEventos = async () => {
       try {
-        await axios.get('/api/eventos/pendientes', {
+        const res = await axios.get('/api/eventos/pendientes', {
           headers: { Authorization: `Bearer ${token}` },
-        }).then(res => setEventos(res.data));
+        });
+        // Asegurarse de que todos los eventos tengan estado Pendiente inicialmente
+        const updatedEventos = res.data.map(evento => ({
+          ...evento,
+          estadoEventoId: 1, // Pendiente
+        }));
+        setEventos(updatedEventos);
       } catch (err) {
         setError('Error al cargar los eventos pendientes');
         console.error('Error fetching events:', err);
@@ -92,9 +96,11 @@ function OrdenControl() {
 
   useEffect(() => {
     if (!selectedEvento) {
-      console.log('No evento seleccionado');
       setEventoDetalles(null);
       setSeriesTemporales([]);
+      setConfirmedEvento(null);
+      setRevisionData(null);
+      setActionCompleted(false);
       return;
     }
 
@@ -106,7 +112,7 @@ function OrdenControl() {
         const response = await axios.get(`/api/eventos/${selectedEvento.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('Evento detalles response:', JSON.stringify(response.data, null, 2)); // Debug log
+        console.log('Evento detalles response:', JSON.stringify(response.data, null, 2));
         setEventoDetalles(response.data);
       } catch (err) {
         console.error('Error fetching event details:', err);
@@ -116,7 +122,7 @@ function OrdenControl() {
             localStorage.removeItem('token');
             localStorage.removeItem('username');
             navigate('/login');
-          }, 3000); // Delay redirect to show error
+          }, 3000);
         } else {
           setError('Error al cargar los detalles del evento');
           setEventoDetalles(null);
@@ -129,7 +135,7 @@ function OrdenControl() {
         const response = await axios.get(`/api/eventos/${selectedEvento.id}/series-temporales`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('Series temporales response:', JSON.stringify(response.data, null, 2)); // Debug log
+        console.log('Series temporales response:', JSON.stringify(response.data, null, 2));
         setSeriesTemporales(response.data);
       } catch (err) {
         console.error('Error fetching time series:', err);
@@ -139,7 +145,7 @@ function OrdenControl() {
             localStorage.removeItem('token');
             localStorage.removeItem('username');
             navigate('/login');
-          }, 3000); // Delay redirect to show error
+          }, 3000);
         } else {
           setError('Error al cargar las series temporales');
           setSeriesTemporales([]);
@@ -151,35 +157,27 @@ function OrdenControl() {
     fetchSeriesTemporales();
   }, [selectedEvento, navigate]);
 
-  const handleConfirmObservacion = async () => {
-    if (!selectedEvento) return;
-    try {
-      const clasificacionDTO = { descripcion: observacion };
-      await axios.post(`/api/eventos/${selectedEvento.id}/clasificar`, clasificacionDTO, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      setObservacion('');
-      alert('Observación guardada');
-    } catch (err) {
-      setError('Error al guardar la observación');
-    }
+  const handleConfirmSelection = () => {
+    setConfirmedEvento(selectedEvento);
+    setEstadoSismografo('Bloqueado En Revision'); // Cambiar estado al confirmar
+    // Aquí podrías agregar una llamada a la API para actualizar el estado
   };
 
-  const handleUpdateEstado = async () => {
-    if (!selectedEvento) return;
-    try {
-      await axios.post(
-        `/api/eventos/${selectedEvento.id}/cambiar-estado`,
-        {},
-        {
-          params: { nuevoEstadoId: estadoSismografo },
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        }
-      );
-      alert('Estado actualizado');
-    } catch (err) {
-      setError('Error al actualizar el estado');
-    }
+  const handleFinalAction = () => {
+    setActionCompleted(true); // Marca que se completó una acción final
+    setConfirmedEvento(null); // Permite volver a seleccionar eventos
+    setEstadoSismografo('Pendiente'); // Restablece el estado inicial
+    // Aquí podrías agregar una llamada a la API para guardar el estado final
+  };
+
+  const handleRejectEvent = () => {
+    setRevisionData({
+      responsable: username,
+      fechaHoraRevision: format(new Date(), 'dd/MM/yyyy HH:mm'),
+    });
+    setEstadoSismografo('Rechazado');
+    handleFinalAction();
+    alert('Evento rechazado y actualizado.');
   };
 
   return (
@@ -204,19 +202,36 @@ function OrdenControl() {
           {eventos.length === 0 ? (
             <p className="text-gray-500">No hay eventos pendientes</p>
           ) : (
-            eventos.map((evento) => (
+            eventos.map((evento, index) => (
               <button
                 key={evento.id}
                 className={`p-2 rounded ${
-                  selectedEvento?.id === evento.id ? 'bg-blue-700 text-white' : 'bg-gray-300 hover:bg-gray-400'
+                  selectedEvento?.id === evento.id ? 'bg-[#29675B] text-white' : 'bg-gray-300 hover:bg-gray-400'
                 }`}
-                onClick={() => setSelectedEvento(evento)}
+                onClick={() => {
+                  if (!confirmedEvento || actionCompleted) {
+                    setSelectedEvento(evento);
+                    setActionCompleted(false); // Restablecer al cambiar evento
+                  }
+                }}
+                disabled={confirmedEvento && !actionCompleted}
               >
-                <div className="text-xs text-gray-700">
-                  Estado: {evento.estadoEventoId === 1 ? 'AutoDetectado' : evento.estadoEventoId === 2 ? 'PendienteRevision' : 'Otro'}
+                <div className="text-xs flex items-center">
+                  <span className="bg-gray-600 text-white px-2 py-1 rounded mr-2">
+                    EventoSismico {index + 1}
+                  </span>
+                  <span>{formatDate(evento.fechaHoraOcurrencia)}</span>
                 </div>
               </button>
             ))
+          )}
+          {selectedEvento && !confirmedEvento && (
+            <button
+              className="bg-[#ADBAC0] text-white hover:bg-[#29675B] px-4 py-2 rounded mt-2"
+              onClick={handleConfirmSelection}
+            >
+              Confirmar Selección
+            </button>
           )}
         </div>
         <div className="flex-1 flex flex-col gap-4">
@@ -230,120 +245,177 @@ function OrdenControl() {
               <h2 className="font-bold text-lg mb-2">Datos del Evento Sísmico</h2>
               <div className="grid grid-cols-2 gap-2">
                 <div><b>ID:</b> {eventoDetalles?.id}</div>
-                <div><b>Fecha/Hora:</b> {eventoDetalles?.fechaHoraOcurrencia ? formatDate(eventoDetalles.fechaHoraOcurrencia) : ''}</div>
-                <div><b>Origen:</b> {eventoDetalles?.origenGeneracion}</div>
+                <div><b>Fecha/Hora:</b> {formatDate(eventoDetalles?.fechaHoraOcurrencia)}</div>
+                <div><b>Alcance:</b> {eventoDetalles?.alcance}</div>
+                <div><b>Origen de Generación:</b> {eventoDetalles?.origenGeneracion}</div>
+                <div><b>Clasificación:</b> {eventoDetalles?.clasificacion}</div>
                 <div><b>Magnitud:</b> {eventoDetalles?.magnitud}</div>
               </div>
+              {revisionData && (
+                <div className="mt-2 p-2 bg-gray-100 rounded">
+                  <div><b>-> Responsable:</b> {revisionData.responsable}</div>
+                  <div><b>-> Fecha y Hora Revisión:</b> {revisionData.fechaHoraRevision}</div>
+                </div>
+              )}
             </div>
           )}
         </div>
         <div className="bg-gray-200 p-4 rounded-lg w-1/4 flex flex-col justify-between">
           <div>
             <h3 className="font-medium mb-2">Situación Evento Sismico</h3>
-            {["Pendiente Revision", "Autodetectado", "Bloqueado En Revision", "Rechazado"].map((id) => (
-              <div key={id} className="flex items-center gap-2 mb-2">
-                <div
-                  className={`w-4 h-4 rounded-full border cursor-pointer ${
-                    estadoSismografo === id ? 'bg-green-600 border-black' : 'bg-gray-400'
+            {["Pendiente", "Autodetectado", "Bloqueado En Revision", "Rechazado"].map((estado) => (
+              <div key={estado} className="flex items-center gap-2 mb-2">
+                <span
+                  className={`px-2 py-1 rounded ${
+                    estadoSismografo === estado
+                      ? estado === 'Bloqueado En Revision'
+                        ? 'bg-red-600 text-white'
+                        : estado === 'Rechazado'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-[#ADBAC0] text-white'
+                      : 'bg-[#373737] text-white'
                   }`}
-                  onClick={() => setEstadoSismografo(id)}
-                />
-                <span>Estado {id}</span>
+                >
+                  {estado}
+                </span>
               </div>
             ))}
           </div>
         </div>
       </div>
       <div className="mt-4 bg-white rounded shadow p-4 w-full">
-      {!selectedEvento ? (
-        <span className="text-gray-500">Seleccione un evento para ver los datos detallados del sismo y sus series temporales</span>
-      ) : (
-        <div className="grid grid-cols-3 gap-4">
-          {/* Datos Sismo */}
-          <div className="col-span-1">
-            <h3 className="font-semibold mb-2">Datos Sismo</h3>
-            <div className="grid grid-cols-2 gap-2 mb-2">
-              <div><b>Alcance:</b> {eventoDetalles?.alcance || 'N/A'}</div>
-              <div><b>Clasificación:</b> {eventoDetalles?.clasificacion || 'N/A'}</div>
-              <div><b>Origen de Generación:</b> {eventoDetalles?.origenGeneracion || 'N/A'}</div>
-            </div>
-            <div className="mt-4 flex flex-col gap-2">
-              <button
-                className="bg-blue-600 text-white hover:bg-blue-800 px-4 py-2 rounded text-sm"
-                onClick={() => alert('Modificar datos activado')}
-              >
-                Modificar Magnitud, Alcance y Origen
-              </button>
-            </div>
-          </div>
-          {/* Situación Evento Sísmico (Series Temporales) */}
-          <div className="col-span-1">
-            <h3 className="font-semibold mb-2">Situación Evento Sísmico</h3>
-            {seriesTemporales.length === 0 ? (
-              <p className="text-gray-500">No hay series temporales para este evento</p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {seriesTemporales.map((serie) => (
-                  <div key={serie.id} className="border p-2 rounded">
-                    <h4 className="font-medium">Estación: {serie.estacionSismologica || 'Sin estación'}</h4>
-                    <div><b>Velocidad de Onda:</b> {serie.velocidadOnda || 'N/A'}</div>
-                    <div><b>Frecuencia de Onda:</b> {serie.frecuenciaOnda || 'N/A'}</div>
-                    <div><b>Longitud:</b> {serie.longitud || 'N/A'}</div>
-                  </div>
-                ))}
+        {!selectedEvento ? (
+          <span className="text-gray-500">Seleccione un evento para ver los datos detallados del sismo y sus series temporales</span>
+        ) : (
+          <div className="grid grid-cols-3 gap-4">
+            {/* Datos Sismo */}
+            <div className="col-span-1">
+              <h3 className="font-semibold mb-2">Datos Sismo</h3>
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                <div><b>Alcance:</b> {eventoDetalles?.alcance || 'N/A'}</div>
+                <div><b>Clasificación:</b> {eventoDetalles?.clasificacion || 'N/A'}</div>
+                <div><b>Origen de Generación:</b> {eventoDetalles?.origenGeneracion || 'N/A'}</div>
+                <div><b>Magnitud:</b> {eventoDetalles?.magnitud || 'N/A'}</div>
               </div>
-            )}
-            <div className="mt-4 flex flex-col gap-2">
-              <button
-                className="bg-green-600 text-white hover:bg-green-800 px-4 py-2 rounded text-sm"
-                onClick={() => alert('Confirmar evento')}
-              >
-                Confirmar Evento
-              </button>
-              <button
-                className="bg-red-600 text-white hover:bg-red-800 px-4 py-2 rounded text-sm"
-                onClick={() => alert('Rechazar evento')}
-              >
-                Rechazar Evento
-              </button>
-              <button
-                className="bg-yellow-600 text-white hover:bg-yellow-800 px-4 py-2 rounded text-sm"
-                onClick={() => alert('Solicitar revisión a experto')}
-              >
-                Solicitar Revisión a Experto
-              </button>
+              <div className="mt-4 flex flex-col gap-2">
+                <button
+                  className={`text-white px-4 py-2 rounded text-sm ${
+                    confirmedEvento ? 'bg-[#ADBAC0] hover:bg-[#29675B]' : 'bg-[#373737]'
+                  }`}
+                  onClick={() => confirmedEvento && alert('Modificar datos activado')}
+                  disabled={!confirmedEvento}
+                >
+                  Modificar Magnitud, Alcance y Origen
+                </button>
+              </div>
+            </div>
+            {/* Situación Evento Sísmico (Series Temporales) */}
+            <div className="col-span-1">
+              <h3 className="font-semibold mb-2">Situación Evento Sísmico</h3>
+              {seriesTemporales.length === 0 ? (
+                <p className="text-gray-500">No hay series temporales para este evento</p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {seriesTemporales.map((serie) => (
+                    <div key={serie.id} className="border p-2 rounded">
+                      <h4 className="font-medium">Estación: {serie.estacionSismologica || 'Sin estación'}</h4>
+                      <div><b>Velocidad de Onda:</b> {serie.velocidadOnda || 'N/A'}</div>
+                      <div><b>Frecuencia de Onda:</b> {serie.frecuenciaOnda || 'N/A'}</div>
+                      <div><b>Longitud:</b> {serie.longitud || 'N/A'}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="mt-4 flex flex-col gap-2">
+                <button
+                  className={`text-white px-4 py-2 rounded text-sm ${
+                    confirmedEvento ? 'bg-[#ADBAC0] hover:bg-[#29675B]' : 'bg-[#373737]'
+                  }`}
+                  onClick={() => {
+                    if (confirmedEvento) {
+                      handleFinalAction();
+                      alert('Evento confirmado');
+                    }
+                  }}
+                  disabled={!confirmedEvento}
+                >
+                  Confirmar Evento
+                </button>
+                <button
+                  className={`text-white px-4 py-2 rounded text-sm ${
+                    confirmedEvento ? 'bg-[#ADBAC0] hover:bg-[#29675B]' : 'bg-[#373737]'
+                  }`}
+                  onClick={handleRejectEvent}
+                  disabled={!confirmedEvento}
+                >
+                  Rechazar Evento
+                </button>
+                <button
+                  className={`text-white px-4 py-2 rounded text-sm ${
+                    confirmedEvento ? 'bg-[#ADBAC0] hover:bg-[#29675B]' : 'bg-[#373737]'
+                  }`}
+                  onClick={() => {
+                    if (confirmedEvento) {
+                      handleFinalAction();
+                      alert('Revisión solicitada a experto');
+                    }
+                  }}
+                  disabled={!confirmedEvento}
+                >
+                  Solicitar Revisión a Experto
+                </button>
+              </div>
+            </div>
+            {/* Visualizar Simograma */}
+            <div className="col-span-1">
+              <h3 className="font-semibold mb-2">Visualizar Simograma</h3>
+              <p id="sismograma-output" className="mb-4">No se ha generado el sismograma aún...</p>
+              <div className="mt-4 flex flex-col gap-2">
+                <button
+                  className={`text-white px-4 py-2 rounded text-sm ${
+                    confirmedEvento ? 'bg-blue-600 hover:bg-blue-800' : 'bg-[#373737]'
+                  }`}
+                  onClick={() => {
+                    if (confirmedEvento) {
+                      const output = document.getElementById('sismograma-output');
+                      output.textContent = 'Generando sismograma...';
+                      setTimeout(() => {
+                        output.textContent = 'Sismograma generado con éxito para las estaciones.';
+                      }, 2000);
+                    }
+                  }}
+                  disabled={!confirmedEvento}
+                >
+                  Generar Simograma
+                </button>
+                <button
+                  className={`text-white px-4 py-2 rounded text-sm ${
+                    confirmedEvento ? 'bg-indigo-600 hover:bg-indigo-800' : 'bg-[#373737]'
+                  }`}
+                  onClick={() => confirmedEvento && alert('Visualizar en mapa')}
+                  disabled={!confirmedEvento}
+                >
+                  Visualizar en Mapa
+                </button>
+                <button
+                  className={`text-white px-4 py-2 rounded text-sm ${
+                    confirmedEvento ? 'bg-gray-600 hover:bg-gray-800' : 'bg-[#373737]'
+                  }`}
+                  onClick={() => confirmedEvento && alert('No visualizar en mapa')}
+                  disabled={!confirmedEvento}
+                >
+                  No Visualizar en Mapa
+                </button>
+              </div>
             </div>
           </div>
-          {/* Visualizar Simograma */}
-          <div className="col-span-1">
-            <h3 className="font-semibold mb-2">Visualizar Simograma</h3>
-            <p id="sismograma-output" className="mb-4">No se ha generado el sismograma aún...</p>
-            <div className="mt-4 flex flex-col gap-2">
-              <button
-                className="bg-blue-600 text-white hover:bg-blue-800 px-4 py-2 rounded text-sm"
-                onClick={() => {
-                  const output = document.getElementById('sismograma-output');
-                  output.textContent = 'Generando sismograma...';
-                  setTimeout(() => {
-                    output.textContent = 'Sismograma generado con éxito para las estaciones.';
-                  }, 2000);
-                }}
-              >
-                Generar Simograma
-              </button>
-              <button
-                className="bg-indigo-600 text-white hover:bg-indigo-800 px-4 py-2 rounded text-sm"
-                onClick={() => alert('Visualizar en mapa')}
-              >
-                Visualizar en Mapa
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </div>
   );
 }
+
+// Asegúrate de importar isValid si no está disponible globalmente
+// import { isValid } from 'date-fns';
 
 export default OrdenControl;
