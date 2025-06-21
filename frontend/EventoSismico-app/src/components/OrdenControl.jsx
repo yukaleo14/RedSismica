@@ -16,8 +16,6 @@ function OrdenControl() {
   const [eventoDetalles, setEventoDetalles] = useState(null);
   const navigate = useNavigate();
 
-<<<<<<< HEAD
-=======
   // Map state labels to estadoEventoId
   const estadoMap = {
     'Pendiente': 1,
@@ -26,40 +24,6 @@ function OrdenControl() {
     'Rechazado': 4,
   };
 
-  // Utility to format dates safely
-/*   const formatDate = (dateString) => {
-  if (!dateString) return '';
-
-  // Handle comma-separated format like "2025,6,20,12,0"
-  if (typeof dateString === 'string' && dateString.includes(',')) {
-    try {
-      const parts = dateString.split(',').map(Number);
-      if (parts.length !== 5) {
-        console.warn(`Invalid date parts: ${dateString}`);
-        return 'Fecha inválida';
-      }
-      const [year, month, day, hour, minute] = parts;
-      // JavaScript months are 0-based, so subtract 1 from month
-      const date = new Date(year, month - 1, day, hour, minute);
-      if (!isValid(date)) {
-        console.warn(`Invalid parsed date: ${dateString}`);
-        return 'Fecha inválida';
-      }
-      return format(date, 'dd/MM/yyyy HH:mm');
-    } catch (err) {
-      console.warn(`Error parsing date: ${dateString}`, err);
-      return 'Fecha inválida';
-    }
-  }
-
-  // Handle standard date strings
-  const date = new Date(dateString);
-  if (!isValid(date)) {
-    console.warn(`Invalid date: ${dateString}`);
-    return 'Fecha inválida';
-  }
-  return format(date, 'dd/MM/yyyy HH:mm');
-}; */
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   if (Array.isArray(dateString)) {
@@ -91,7 +55,6 @@ const formatDate = (dateString) => {
   }
 };
 
->>>>>>> aacb70f77a47ad518b720ff9c65cc65ded1ec49b
   useEffect(() => {
     const storedUsername = localStorage.getItem('username') || 'Usuario';
     setUsername(storedUsername);
@@ -127,42 +90,14 @@ const formatDate = (dateString) => {
   }, [navigate]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    if (selectedEvento) {
-      const token = localStorage.getItem('token');
-      fetch(`/api/eventos/${selectedEvento.id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(res => {
-          if (!res.ok) throw new Error('No autorizado');
-          return res.json();
-        })
-        .then(data => setEventoDetalles(data))
-        .catch(() => setEventoDetalles(null));
-
-      fetch(`/api/series/${selectedEvento.id}/series-temporales`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(res => {
-          if (!res.ok) throw new Error('No autorizado');
-          return res.json();
-        })
-        .then(data => setSeriesTemporales(data))
-        .catch(() => setSeriesTemporales([]));
-    } else {
-=======
     if (!selectedEvento) {
       console.log('No evento seleccionado');
->>>>>>> aacb70f77a47ad518b720ff9c65cc65ded1ec49b
       setEventoDetalles(null);
       setSeriesTemporales([]);
     }
-<<<<<<< HEAD
-  }, [selectedEvento]);
-=======
 
     const token = localStorage.getItem('token');
-    console.log('Fetching details for evento ID:', selectedEvento.id);
+    
 
     // Fetch event details
     const fetchEventoDetalles = async () => {
@@ -217,7 +152,6 @@ const formatDate = (dateString) => {
     fetchEventoDetalles();
     fetchSeriesTemporales();
   }, [selectedEvento, navigate]);
->>>>>>> aacb70f77a47ad518b720ff9c65cc65ded1ec49b
 
   const handleConfirmObservacion = async () => {
     if (!selectedEvento) return;
