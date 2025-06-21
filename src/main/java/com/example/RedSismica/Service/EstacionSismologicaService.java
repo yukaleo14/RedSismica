@@ -14,7 +14,7 @@ public class EstacionSismologicaService {
     @Autowired
     private EstacionSismologicaRepository repo;
 
-    /*public List<EstacionSismologica> obtenerEstaciones(EventoSismico evento) {
+    public List<EstacionSismologica> obtenerEstaciones(EventoSismico evento) {
         return repo.findByEventoSismico(evento);
-    }*/
+    }
 }

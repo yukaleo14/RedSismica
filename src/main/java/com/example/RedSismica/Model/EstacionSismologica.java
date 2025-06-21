@@ -29,8 +29,8 @@ public class EstacionSismologica {
     private LocalDateTime fechaSolicitudCertificacion;
     private String nroCerificacionAdquisicion;
 
-    /*@ManyToOne
+    @ManyToOne
     @JoinColumn(name = "evento_sismico_id")
-    private EventoSismico eventoSismico;*/
+    private EventoSismico eventoSismico;
 
 }

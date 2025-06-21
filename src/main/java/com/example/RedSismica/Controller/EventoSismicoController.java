@@ -39,7 +39,7 @@ import com.example.RedSismica.Model.SerieTemporal;
 import com.example.RedSismica.Repository.EventoSismicoRepository;
 import com.example.RedSismica.Service.CambioEstadoService;
 import com.example.RedSismica.Service.ClasificacionService;
-import com.example.RedSismica.Service.EstacionSismologicaService;
+//import com.example.RedSismica.Service.EstacionSismologicaService;
 import com.example.RedSismica.Service.EstadoEventoService;
 import com.example.RedSismica.Service.EventoSismicoService;
 import com.example.RedSismica.Service.MuestraSismicaService;
@@ -64,7 +64,7 @@ public class EventoSismicoController {
     private final SerieTemporalMapper serieTemporalMapper;
     private final MuestraSismicaService muestraSismicaService;
     private final MuestraSismicaMapper muestraSismicaMapper;
-    private final EstacionSismologicaService estacionService;
+    //private final EstacionSismologicaService estacionService;
     private final EstacionSismologicaMapper estacionMapper;
     private final EventoSismicoRepository eventoSismicoRepository;
 
