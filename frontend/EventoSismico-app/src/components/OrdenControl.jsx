@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 
 function OrdenControl() {
   const [eventos, setEventos] = useState([]);
