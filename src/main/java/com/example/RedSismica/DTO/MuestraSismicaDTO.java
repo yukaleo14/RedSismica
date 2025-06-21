@@ -17,5 +17,5 @@ public class MuestraSismicaDTO {
     private float velocidad;
     private float frecuencia;
     private float longitud;
-    private DetalleMuestraSismicaDTO detalleMuestraSismica;;
+    private DetalleMuestraSismicaDTO detalleMuestraSismica;
 }

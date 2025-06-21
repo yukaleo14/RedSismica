@@ -22,29 +22,15 @@ public class EstacionSismologica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codigoEstacion;
+
     private String nombre;
     private Double latitud;
     private Double longitud;
     private LocalDateTime fechaSolicitudCertificacion;
     private String nroCerificacionAdquisicion;
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "evento_sismico_id")
-    private EventoSismico eventoSismico;
+    private EventoSismico eventoSismico;*/
 
-    public Long getCodigoEstacion() {
-        return codigoEstacion;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public Object getId() {
-        throw new UnsupportedOperationException("Unimplemented method 'getId'");
-    }
-
-    public void setId(Object id) {
-        throw new UnsupportedOperationException("Unimplemented method 'setId'");
-    }
 }

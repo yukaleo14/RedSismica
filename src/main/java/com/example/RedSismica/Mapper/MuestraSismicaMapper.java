@@ -6,6 +6,7 @@ import com.example.RedSismica.DTO.DetalleMuestraSismicaDTO;
 import com.example.RedSismica.DTO.MuestraSismicaDTO;
 import com.example.RedSismica.Model.DetalleMuestraSismica;
 import com.example.RedSismica.Model.MuestraSismica;
+import com.example.RedSismica.Model.TipoDeDato;
 
 @Component
 public class MuestraSismicaMapper {
@@ -37,8 +38,9 @@ public class MuestraSismicaMapper {
         entity.setFrecuencia(dto.getFrecuencia());
         entity.setLongitud(dto.getLongitud());
 
-        entity.setDetalleMuestraSismica(toDetalleEntity(dto.getDetalleMuestraSismica()));
-
+        if (dto.getDetalleMuestraSismica() != null) {
+            entity.setDetalleMuestraSismica(toDetalleEntity(dto.getDetalleMuestraSismica()));
+        }
         return entity;
     }
 
@@ -48,7 +50,10 @@ public class MuestraSismicaMapper {
 
         DetalleMuestraSismicaDTO dto = new DetalleMuestraSismicaDTO();
         dto.setId(entity.getId());
-        // Mapear más campos si existen
+        dto.setValor(entity.getValor());
+        if (entity.getTipoDeDato() != null) {
+            dto.setTipoDeDatoId(entity.getTipoDeDato().getId());
+        }
         return dto;
     }
 
@@ -58,7 +63,8 @@ public class MuestraSismicaMapper {
 
         DetalleMuestraSismica entity = new DetalleMuestraSismica();
         entity.setId(dto.getId());
-        // Mapear más campos si existen
+        entity.setValor(dto.getValor());
+        //No se setea TipoDeDato completo, se maneja en el servicio :)
         return entity;
     }
 }

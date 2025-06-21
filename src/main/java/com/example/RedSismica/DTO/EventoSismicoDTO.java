@@ -1,6 +1,7 @@
 package com.example.RedSismica.DTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,13 +24,11 @@ public class EventoSismicoDTO {
     private String alcance;
     private String origenGeneracion;
     private Long estadoEventoId;
-    private Long serieTemporalId;
+    private List<SerieTemporalDTO> seriesTemporales;
     private Long clasificacionId;
     private Boolean autoDetectado;
     private Boolean pendienteRevision;
     private String responsableRevision;
+    private LocalDateTime fechaHoraRevision;
 
-    public Object getResponsableRevision() {
-        return responsableRevision;
-    }
 }

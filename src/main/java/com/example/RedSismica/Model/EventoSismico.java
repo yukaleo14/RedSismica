@@ -1,13 +1,23 @@
 package com.example.RedSismica.Model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn; // Necesario para @JoinColumn
+import jakarta.persistence.ManyToOne; // Necesario para @ManyToOne
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference; // Agrega si no está presente
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,15 +29,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventoSismico {
-    
-    public static final String esAutoDetectado = null;
+
+    public static final String esAutoDetectado = null; // Esto parece un error, debería ser una propiedad o constante de clase si aplica
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private LocalDateTime fechaHoraOcurrencia;
     private LocalDateTime fechaHoraFin;
+    private LocalDateTime fechaHoraRevision;
     private Double latitudHipocentro;
     private Double latitudEpicentro;
     private Double longitudEpicentro;
@@ -37,35 +48,34 @@ public class EventoSismico {
     private String origenGeneracion;
     private Boolean autoDetectado;
     private Boolean pendienteRevision;
+    private String responsableRevision;
 
     @ManyToOne
     private EstadoEvento estadoEvento;
-    @ManyToOne
-    private SerieTemporal serieTemporal;
     @OneToOne
     private Clasificacion clasificacion;
 
-   
+    // Relación con SerieTemporal (mantener como está)
+    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<SerieTemporal> seriesTemporales = new ArrayList<>();
+
+    // AÑADE ESTA RELACIÓN: Un EventoSismico tiene UNA EstacionSismologica (la principal)
+    @ManyToOne(fetch = FetchType.LAZY) // FetchType.LAZY es generalmente mejor para rendimiento
+    @JoinColumn(name = "id_estacion_sismologica") // Esta es la clave foránea en la tabla 'eventos_sismicos'
+    private EstacionSismologica estacionSismologica; // <-- Aquí se referencia la estación
+
     public boolean esPendienteRevision() {
-        return this.estadoEvento.esPendienteRevision();
+        return this.estadoEvento != null && this.estadoEvento.esPendienteRevision();
     }
 
     public boolean esAutoDetectado() {
-        return this.estadoEvento.esAutoDetectado();
+        return this.estadoEvento != null && this.estadoEvento.esAutoDetectado();
     }
 
     public void bloquear() {
         throw new UnsupportedOperationException("Unimplemented method 'bloquear'");
     }
-
-    public void setFechaHoraRevision(LocalDateTime now) {
-        throw new UnsupportedOperationException("Unimplemented method 'setFechaHoraRevision'");
-    }
-
-    public void setResponsableRevision(Object responsableRevision) {
-        throw new UnsupportedOperationException("Unimplemented method 'setResponsableRevision'");
-    }
-
 }
 
 

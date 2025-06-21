@@ -12,5 +12,5 @@ import lombok.Setter;
 public class DetalleMuestraSismicaDTO {
     private Long id;
     private String valor;
-    private TipoDeDatoDTO tipoDeDato;
+    private Long tipoDeDatoId;
 }

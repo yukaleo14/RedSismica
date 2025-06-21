@@ -1,6 +1,7 @@
 package com.example.RedSismica.DTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,9 +14,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SerieTemporalDTO {
     private Long id;
-    private EventoSismicoDTO evento;
-    private EstacionSismologicaDTO estacionSismologica;
-    private MuestraSismicaDTO muestraSismica;
+
+    private Long eventoId;
+    private Long estacionId;
+
+    private List<MuestraSismicaDTO> muestrasSismicas;
+
     private LocalDateTime fechaHoraRegistroMuestra;
     private LocalDateTime fechaHoraRegristo;
     private Double frecuenciaMuestreo;

@@ -19,10 +19,4 @@ public class EstacionSismologicaDTO {
     private LocalDateTime fechaSolicitudCertificacion;
     private String nroCerificacionAdquisicion;
     
-    public void setId(Object id) {
-        throw new UnsupportedOperationException("Unimplemented method 'setId'");
-    }
-    public Object getId() {
-        throw new UnsupportedOperationException("Unimplemented method 'getId'");
-    }
 }

@@ -11,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +30,7 @@ public class SerieTemporal {
 
     @ManyToOne
     @JoinColumn(name = "evento_id")
+    @JsonBackReference
     private EventoSismico evento;
 
     @ManyToOne
@@ -35,7 +38,7 @@ public class SerieTemporal {
     private EstacionSismologica estacionSismologica;
 
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MuestraSismica> muestraSismica;
+    private List<MuestraSismica> muestrasSismicas;
 
     private LocalDateTime fechaHoraRegistroMuestra;
     private LocalDateTime fechaHoraRegristo;
@@ -43,7 +46,7 @@ public class SerieTemporal {
     private String condicionAlarma;
 
     //Getters
-   
+
     public void getDatos() {
         System.out.println("Fecha y hora de registro de la muestra: " + fechaHoraRegistroMuestra);
         System.out.println("Fecha y hora de registro: " + fechaHoraRegristo);

@@ -11,10 +11,10 @@ import com.example.RedSismica.Repository.EstacionSismologicaRepository;
 
 @Service
 public class EstacionSismologicaService {
-    @Autowired 
+    @Autowired
     private EstacionSismologicaRepository repo;
 
-    public List<EstacionSismologica> obtenerEstaciones(EventoSismico evento) {
+    /*public List<EstacionSismologica> obtenerEstaciones(EventoSismico evento) {
         return repo.findByEventoSismico(evento);
-    }
+    }*/
 }

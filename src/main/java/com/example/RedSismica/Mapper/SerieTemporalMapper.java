@@ -1,20 +1,28 @@
 package com.example.RedSismica.Mapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.RedSismica.DTO.EstacionSismologicaDTO;
 import com.example.RedSismica.DTO.EventoSismicoDTO;
+import com.example.RedSismica.DTO.MuestraSismicaDTO;
 import com.example.RedSismica.DTO.SerieTemporalDTO;
 import com.example.RedSismica.Model.EstacionSismologica;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.SerieTemporal;
+import com.example.RedSismica.Model.MuestraSismica;
 
 @Component
 public class SerieTemporalMapper {
-    private MuestraSismicaMapper muestraSismicaMapper;
+    private final MuestraSismicaMapper muestraSismicaMapper;
 
+    @Autowired
+    public SerieTemporalMapper(MuestraSismicaMapper muestraSismicaMapper) {
+        this.muestraSismicaMapper = muestraSismicaMapper;
+    }
     public SerieTemporalDTO toDTO(SerieTemporal entity) {
         if (entity == null)
             return null;
@@ -26,16 +34,23 @@ public class SerieTemporalMapper {
         dto.setFrecuenciaMuestreo(entity.getFrecuenciaMuestreo());
         dto.setCondicionAlarma(entity.getCondicionAlarma());
 
-        dto.setEvento(toEventoDTO(entity.getEvento()));
-        dto.setEstacionSismologica(toEstacionDTO(entity.getEstacionSismologica()));
-        dto.setMuestraSismica(muestraSismicaMapper.toDTO(entity.getMuestraSismica().get(0)));
-
-        if (entity.getMuestraSismica() != null && !entity.getMuestraSismica().isEmpty()) {
-            dto.setMuestraSismica(muestraSismicaMapper.toDTO(entity.getMuestraSismica().get(0)));
-        } else {
-            dto.setMuestraSismica(null); // O manejar de otra manera según el caso
+        if (entity.getEvento() != null) {
+            dto.setEventoId(entity.getEvento().getId());
         }
-        
+        if (entity.getEstacionSismologica() != null) {
+            dto.setEstacionId(entity.getEstacionSismologica().getCodigoEstacion()); // Usar codigoEstacion
+        }
+
+        if (entity.getMuestrasSismicas() != null && !entity.getMuestrasSismicas().isEmpty()) {
+            dto.setMuestrasSismicas( // <-- Correcto, setMuestrasSismicas (en plural)
+                entity.getMuestrasSismicas().stream()
+                    .map(muestraSismicaMapper::toDTO)
+                    .collect(Collectors.toList())
+            );
+        } else {
+            dto.setMuestrasSismicas(List.of()); // Asegura que la lista no sea null
+        }
+
         return dto;
     }
 
@@ -50,14 +65,14 @@ public class SerieTemporalMapper {
         entity.setFrecuenciaMuestreo(dto.getFrecuenciaMuestreo());
         entity.setCondicionAlarma(dto.getCondicionAlarma());
 
-        entity.setEvento(toEventoEntity(dto.getEvento()));
-        entity.setEstacionSismologica(toEstacionEntity(dto.getEstacionSismologica()));
-        entity.setMuestraSismica(List.of(muestraSismicaMapper.toEntity(dto.getMuestraSismica())));
+        //entity.setEvento(toEventoEntity(dto.getEvento()));
+        //entity.setEstacionSismologica(toEstacionEntity(dto.getEstacionSismologica()));
+        //entity.setMuestraSismica(List.of(muestraSismicaMapper.toEntity(dto.getMuestraSismica())));
 
         return entity;
     }
 
-    private EventoSismicoDTO toEventoDTO(EventoSismico entity) {
+    /*private EventoSismicoDTO toEventoDTO(EventoSismico entity) {
         if (entity == null)
             return null;
         EventoSismicoDTO dto = new EventoSismicoDTO();
@@ -88,6 +103,6 @@ public class SerieTemporalMapper {
         EstacionSismologica entity = new EstacionSismologica();
         entity.setId(dto.getId());
         entity.setNombre(dto.getNombre()); // si tiene
-        return entity;
-    }
+        return entity;*/
+    //}
 }

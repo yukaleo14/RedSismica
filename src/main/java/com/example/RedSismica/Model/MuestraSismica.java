@@ -41,5 +41,5 @@ public class MuestraSismica {
     public void getDatos() {
         System.out.println("Fecha y hora de la muestra: " + fechaHoraMuestra);
     }
-    
+
 }
