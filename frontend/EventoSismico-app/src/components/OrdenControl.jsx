@@ -251,8 +251,8 @@ function OrdenControl() {
               </div>
               {revisionData && (
                 <div className="mt-2 p-2 bg-gray-100 rounded">
-                  <div><b> Responsable:</b> {revisionData.responsable}</div>
-                  <div><b> Fecha y Hora Revisión:</b> {revisionData.fechaHoraRevision}</div>
+                  <div><b>Responsable:</b> {revisionData.responsable}</div>
+                  <div><b>Fecha y Hora Revisión:</b> {revisionData.fechaHoraRevision}</div>
                 </div>
               )}
             </div>
@@ -297,7 +297,7 @@ function OrdenControl() {
               </div>
               <div className="mt-4 flex flex-col gap-2">
                 <button
-                  className={`text-white px-4 py-2 rounded text-sm ${
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-[#bf6777] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
                   onClick={() => confirmedEvento && alert('Modificar datos activado')}
@@ -326,7 +326,7 @@ function OrdenControl() {
               )}
               <div className="mt-4 flex flex-col gap-2">
                 <button
-                  className={`text-white px-4 py-2 rounded text-sm ${
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
                   onClick={() => {
@@ -340,7 +340,7 @@ function OrdenControl() {
                   Confirmar Evento
                 </button>
                 <button
-                  className={`text-white px-4 py-2 rounded text-sm ${
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
                   onClick={handleRejectEvent}
@@ -349,7 +349,7 @@ function OrdenControl() {
                   Rechazar Evento
                 </button>
                 <button
-                  className={`text-white px-4 py-2 rounded text-sm ${
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
                   onClick={() => {
@@ -370,7 +370,7 @@ function OrdenControl() {
               <p id="sismograma-output" className="mb-4">No se ha generado el sismograma aún...</p>
               <div className="mt-4 flex flex-col gap-2">
                 <button
-                  className={`text-white px-4 py-2 rounded text-sm ${
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-blue-600 hover:bg-blue-800' : 'bg-[#373737]'
                   }`}
                   onClick={() => {
@@ -387,7 +387,7 @@ function OrdenControl() {
                   Generar Simograma
                 </button>
                 <button
-                  className={`text-white px-4 py-2 rounded text-sm ${
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-indigo-600 hover:bg-indigo-800' : 'bg-[#373737]'
                   }`}
                   onClick={() => confirmedEvento && alert('Visualizar en mapa')}
@@ -396,7 +396,7 @@ function OrdenControl() {
                   Visualizar en Mapa
                 </button>
                 <button
-                  className={`text-white px-4 py-2 rounded text-sm ${
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-gray-600 hover:bg-gray-800' : 'bg-[#373737]'
                   }`}
                   onClick={() => confirmedEvento && alert('No visualizar en mapa')}
