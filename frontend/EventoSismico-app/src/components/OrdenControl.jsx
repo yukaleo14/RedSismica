@@ -300,7 +300,7 @@ function OrdenControl() {
               <div className="mt-4 flex flex-col gap-2">
                 <button
                   className={`text-white px-4 py-2 rounded text-sm ${
-                    confirmedEvento ? 'bg-[#ADBAC0] hover:bg-[#29675B]' : 'bg-[#373737]'
+                    confirmedEvento ? 'bg-[#bf6777] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
                   onClick={() => confirmedEvento && alert('Modificar datos activado')}
                   disabled={!confirmedEvento}
@@ -329,7 +329,7 @@ function OrdenControl() {
               <div className="mt-4 flex flex-col gap-2">
                 <button
                   className={`text-white px-4 py-2 rounded text-sm ${
-                    confirmedEvento ? 'bg-[#ADBAC0] hover:bg-[#29675B]' : 'bg-[#373737]'
+                    confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
                   onClick={() => {
                     if (confirmedEvento) {
@@ -343,7 +343,7 @@ function OrdenControl() {
                 </button>
                 <button
                   className={`text-white px-4 py-2 rounded text-sm ${
-                    confirmedEvento ? 'bg-[#ADBAC0] hover:bg-[#29675B]' : 'bg-[#373737]'
+                    confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
                   onClick={handleRejectEvent}
                   disabled={!confirmedEvento}
@@ -352,7 +352,7 @@ function OrdenControl() {
                 </button>
                 <button
                   className={`text-white px-4 py-2 rounded text-sm ${
-                    confirmedEvento ? 'bg-[#ADBAC0] hover:bg-[#29675B]' : 'bg-[#373737]'
+                    confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
                   onClick={() => {
                     if (confirmedEvento) {
