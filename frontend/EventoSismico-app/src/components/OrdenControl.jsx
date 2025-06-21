@@ -393,19 +393,45 @@ function OrdenControl() {
                 </button>
               </div>
             </div>
-            {/* Situación Evento Sísmico (Series Temporales) */}
+            {/* Series Temporales */}
             <div className="col-span-1">
-              <h3 className="font-semibold mb-2">Situación Evento Sísmico</h3>
+              <h3 className="font-semibold mb-2">Series Temporales</h3>
               {seriesTemporales.length === 0 ? (
                 <p className="text-gray-500">No hay series temporales para este evento</p>
               ) : (
-                <div className="flex flex-col gap-2">
-                  {seriesTemporales.map((serie) => (
-                    <div key={serie.id} className="border p-2 rounded">
-                      <h4 className="font-medium">Estación: {serie.estacionSismologica || 'Sin estación'}</h4>
-                      <div><b>Velocidad de Onda:</b> {serie.velocidadOnda || 'N/A'}</div>
-                      <div><b>Frecuencia de Onda:</b> {serie.frecuenciaOnda || 'N/A'}</div>
-                      <div><b>Longitud:</b> {serie.longitud || 'N/A'}</div>
+                <div className="mb-4">
+                  {Object.values(
+                    seriesTemporales.reduce((acc, serie) => {
+                      const station = serie.estacionSismologica || 'Sin estación';
+                      if (!acc[station]) acc[station] = [];
+                      acc[station].push(serie);
+                      return acc;
+                    }, {})
+                  ).map((stationSeries, index) => (
+                    <div key={index} className="mb-4 border p-2 rounded">
+                      <h4 className="font-medium mb-2">Estación: {stationSeries[0].estacionSismologica || 'Sin estación'}</h4>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="bg-gray-200">
+                              <th className="p-2 border">Instante de Tiempo</th>
+                              <th className="p-2 border">Velocidad de Onda (m/s)</th>
+                              <th className="p-2 border">Frecuencia de Onda (Hz)</th>
+                              <th className="p-2 border">Longitud (m)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {stationSeries.map((serie, idx) => (
+                              <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
+                                <td className="p-2 border">{formatDate(serie.timestamp || serie.fechaHoraOcurrencia)}</td>
+                                <td className="p-2 border">{serie.velocidadOnda || 'N/A'}</td>
+                                <td className="p-2 border">{serie.frecuenciaOnda || 'N/A'}</td>
+                                <td className="p-2 border">{serie.longitud || 'N/A'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   ))}
                 </div>
