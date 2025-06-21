@@ -11,6 +11,8 @@ import com.example.RedSismica.Model.Clasificacion;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Repository.EventoSismicoRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class EventoSismicoService {
     
@@ -57,6 +59,7 @@ public class EventoSismicoService {
     }
 
     public EventoSismico getById(Long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+        return repo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Evento con ID " + id + " no encontrado"));
     }
 }

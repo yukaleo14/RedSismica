@@ -77,29 +77,10 @@ public class EventoSismicoController {
     }
 
     // 2. Obtener datos de un evento por ID
-    /* @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<EventoSismicoDTO> obtenerPorId(@PathVariable Long id) {
         EventoSismico evento = eventoService.getById(id);
         return ResponseEntity.ok(eventoMapper.toDTO(evento));
-    } */
-
-    @GetMapping("/{id}")
-    public ResponseEntity<EventoSismicoDTO> getEvento(@PathVariable Long id) {
-        /* EventoSismico evento = eventoService.getById(id);
-        EventoSismicoDTO dto = eventoMapper.toDTO(evento);
-        return ResponseEntity.ok(dto); */
-        try {
-            EventoSismico evento = eventoService.getById(id);
-            if (evento == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-            return ResponseEntity.ok(eventoMapper.toDTO(evento));
-        } catch (Exception e) {
-            // Loggear la excepción para depuración
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new EventoSismicoDTO()); // O un mensaje de error personalizado
-        }
     }
 
     // 3. Finalizar estado actual y registrar nuevo cambio de estado
