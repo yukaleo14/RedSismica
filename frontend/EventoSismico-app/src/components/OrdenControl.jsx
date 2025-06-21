@@ -24,7 +24,7 @@ function OrdenControl() {
   };
 
   // Utility to format dates safely
-  const formatDate = (dateString) => {
+/*   const formatDate = (dateString) => {
   if (!dateString) return '';
 
   // Handle comma-separated format like "2025,6,20,12,0"
@@ -56,6 +56,36 @@ function OrdenControl() {
     return 'Fecha inválida';
   }
   return format(date, 'dd/MM/yyyy HH:mm');
+}; */
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  if (Array.isArray(dateString)) {
+    try {
+      const [year, month, day, hour, minute] = dateString.map(Number);
+      const date = new Date(year, month - 1, day, hour, minute);
+      if (!isValid(date)) {
+        console.warn(`Invalid parsed date: ${dateString}`);
+        return 'Fecha inválida';
+      }
+      return format(date, 'dd/MM/yyyy HH:mm');
+    } catch (err) {
+      console.warn(`Error parsing array date: ${dateString}`, err);
+      return 'Fecha inválida';
+    }
+  }
+
+  // Handle ISO string or other standard date formats
+  try {
+    const date = new Date(dateString);
+    if (!isValid(date)) {
+      console.warn(`Invalid date: ${dateString}`);
+      return 'Fecha inválida';
+    }
+    return format(date, 'dd/MM/yyyy HH:mm');
+  } catch (err) {
+    console.warn(`Error parsing date: ${dateString}`, err);
+    return 'Fecha inválida';
+  }
 };
 
   useEffect(() => {
@@ -109,12 +139,14 @@ function OrdenControl() {
 
   useEffect(() => {
     if (!selectedEvento) {
+      console.log('No evento seleccionado');
       setEventoDetalles(null);
       setSeriesTemporales([]);
       return;
     }
 
     const token = localStorage.getItem('token');
+    console.log('Fetching details for evento ID:', selectedEvento.id);
 
     // Fetch event details
     const fetchEventoDetalles = async () => {
@@ -122,9 +154,10 @@ function OrdenControl() {
         const response = await axios.get(`/api/eventos/${selectedEvento.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('Evento detalles response:', response.data); // Debug log
+        console.log('Evento detalles response:', JSON.stringify(response.data, null, 2)); // Debug log
         setEventoDetalles(response.data);
       } catch (err) {
+        console.error('Error fetching event details:', err);
         if (err.response?.status === 403) {
           setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
           setTimeout(() => {
@@ -146,9 +179,10 @@ function OrdenControl() {
         const response = await axios.get(`/api/eventos/${selectedEvento.id}/series-temporales`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('Series temporales response:', response.data); // Debug log
+        console.log('Series temporales response:', JSON.stringify(response.data, null, 2)); // Debug log
         setSeriesTemporales(response.data);
       } catch (err) {
+        console.error('Error fetching time series:', err);
         if (err.response?.status === 403) {
           setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
           setTimeout(() => {

@@ -21,4 +21,5 @@ public class SerieTemporalService {
     public SerieTemporal getById(Long idSerie) {
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
+    
 }

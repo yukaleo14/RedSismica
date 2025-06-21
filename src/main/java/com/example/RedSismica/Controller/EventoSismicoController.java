@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/eventos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http//:http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173")
 public class EventoSismicoController {
 
     private final EventoSismicoService eventoService;
@@ -80,10 +81,22 @@ public class EventoSismicoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EventoSismicoDTO> getEvento(@PathVariable Long id) {
-        EventoSismico evento = eventoService.getById(id);
+        /* EventoSismico evento = eventoService.getById(id);
         EventoSismicoDTO dto = eventoMapper.toDTO(evento);
-        return ResponseEntity.ok(dto);
-}
+        return ResponseEntity.ok(dto); */
+        try {
+            EventoSismico evento = eventoService.getById(id);
+            if (evento == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            return ResponseEntity.ok(eventoMapper.toDTO(evento));
+        } catch (Exception e) {
+            // Loggear la excepción para depuración
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new EventoSismicoDTO()); // O un mensaje de error personalizado
+        }
+    }
 
     // 3. Finalizar estado actual y registrar nuevo cambio de estado
     @PostMapping("/{id}/cambiar-estado")
@@ -113,11 +126,26 @@ public class EventoSismicoController {
     // 5. Obtener series temporales de un evento
     @GetMapping("/{id}/series-temporales")
     public ResponseEntity<List<SerieTemporalDTO>> obtenerSeries(@PathVariable Long id) {
-        EventoSismico evento = eventoService.getById(id);
+        /* EventoSismico evento = eventoService.getById(id);
         List<SerieTemporalDTO> dtos = serieTemporalService.obtenerSeries(evento).stream()
             .map(serieTemporalMapper::toDTO)
             .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(dtos); */
+        try {
+            EventoSismico evento = eventoService.getById(id);
+            if (evento == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            List<SerieTemporalDTO> dtos = serieTemporalService.obtenerSeries(evento).stream()
+                    .map(serieTemporalMapper::toDTO)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            // Loggear la excepción para depuración
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null); // O un mensaje de error personalizado
+        }
     }
 
     // 6. Obtener muestras por serie temporal

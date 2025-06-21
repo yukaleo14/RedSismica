@@ -30,6 +30,12 @@ public class SerieTemporalMapper {
         dto.setEstacionSismologica(toEstacionDTO(entity.getEstacionSismologica()));
         dto.setMuestraSismica(muestraSismicaMapper.toDTO(entity.getMuestraSismica().get(0)));
 
+        if (entity.getMuestraSismica() != null && !entity.getMuestraSismica().isEmpty()) {
+            dto.setMuestraSismica(muestraSismicaMapper.toDTO(entity.getMuestraSismica().get(0)));
+        } else {
+            dto.setMuestraSismica(null); // O manejar de otra manera según el caso
+        }
+        
         return dto;
     }
 
