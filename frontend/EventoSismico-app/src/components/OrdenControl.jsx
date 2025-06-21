@@ -16,6 +16,82 @@ function OrdenControl() {
   const [eventoDetalles, setEventoDetalles] = useState(null);
   const navigate = useNavigate();
 
+<<<<<<< HEAD
+=======
+  // Map state labels to estadoEventoId
+  const estadoMap = {
+    'Pendiente': 1,
+    'Autodetectado': 2,
+    'Bloqueado En Revision': 3,
+    'Rechazado': 4,
+  };
+
+  // Utility to format dates safely
+/*   const formatDate = (dateString) => {
+  if (!dateString) return '';
+
+  // Handle comma-separated format like "2025,6,20,12,0"
+  if (typeof dateString === 'string' && dateString.includes(',')) {
+    try {
+      const parts = dateString.split(',').map(Number);
+      if (parts.length !== 5) {
+        console.warn(`Invalid date parts: ${dateString}`);
+        return 'Fecha inválida';
+      }
+      const [year, month, day, hour, minute] = parts;
+      // JavaScript months are 0-based, so subtract 1 from month
+      const date = new Date(year, month - 1, day, hour, minute);
+      if (!isValid(date)) {
+        console.warn(`Invalid parsed date: ${dateString}`);
+        return 'Fecha inválida';
+      }
+      return format(date, 'dd/MM/yyyy HH:mm');
+    } catch (err) {
+      console.warn(`Error parsing date: ${dateString}`, err);
+      return 'Fecha inválida';
+    }
+  }
+
+  // Handle standard date strings
+  const date = new Date(dateString);
+  if (!isValid(date)) {
+    console.warn(`Invalid date: ${dateString}`);
+    return 'Fecha inválida';
+  }
+  return format(date, 'dd/MM/yyyy HH:mm');
+}; */
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  if (Array.isArray(dateString)) {
+    try {
+      const [year, month, day, hour, minute] = dateString.map(Number);
+      const date = new Date(year, month - 1, day, hour, minute);
+      if (!isValid(date)) {
+        console.warn(`Invalid parsed date: ${dateString}`);
+        return 'Fecha inválida';
+      }
+      return format(date, 'dd/MM/yyyy HH:mm');
+    } catch (err) {
+      console.warn(`Error parsing array date: ${dateString}`, err);
+      return 'Fecha inválida';
+    }
+  }
+
+  // Handle ISO string or other standard date formats
+  try {
+    const date = new Date(dateString);
+    if (!isValid(date)) {
+      console.warn(`Invalid date: ${dateString}`);
+      return 'Fecha inválida';
+    }
+    return format(date, 'dd/MM/yyyy HH:mm');
+  } catch (err) {
+    console.warn(`Error parsing date: ${dateString}`, err);
+    return 'Fecha inválida';
+  }
+};
+
+>>>>>>> aacb70f77a47ad518b720ff9c65cc65ded1ec49b
   useEffect(() => {
     const storedUsername = localStorage.getItem('username') || 'Usuario';
     setUsername(storedUsername);
@@ -51,6 +127,7 @@ function OrdenControl() {
   }, [navigate]);
 
   useEffect(() => {
+<<<<<<< HEAD
     if (selectedEvento) {
       const token = localStorage.getItem('token');
       fetch(`/api/eventos/${selectedEvento.id}`, {
@@ -73,10 +150,74 @@ function OrdenControl() {
         .then(data => setSeriesTemporales(data))
         .catch(() => setSeriesTemporales([]));
     } else {
+=======
+    if (!selectedEvento) {
+      console.log('No evento seleccionado');
+>>>>>>> aacb70f77a47ad518b720ff9c65cc65ded1ec49b
       setEventoDetalles(null);
       setSeriesTemporales([]);
     }
+<<<<<<< HEAD
   }, [selectedEvento]);
+=======
+
+    const token = localStorage.getItem('token');
+    console.log('Fetching details for evento ID:', selectedEvento.id);
+
+    // Fetch event details
+    const fetchEventoDetalles = async () => {
+      try {
+        const response = await axios.get(`/api/eventos/${selectedEvento.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log('Evento detalles response:', JSON.stringify(response.data, null, 2)); // Debug log
+        setEventoDetalles(response.data);
+      } catch (err) {
+        console.error('Error fetching event details:', err);
+        if (err.response?.status === 403) {
+          setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+          setTimeout(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            navigate('/login');
+          }, 3000); // Delay redirect to show error
+        } else {
+          setError('Error al cargar los detalles del evento');
+          console.error('Error fetching event details:', err);
+          setEventoDetalles(null);
+        }
+      }
+    };
+
+    // Fetch time series
+    const fetchSeriesTemporales = async () => {
+      try {
+        const response = await axios.get(`/api/eventos/${selectedEvento.id}/series-temporales`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log('Series temporales response:', JSON.stringify(response.data, null, 2)); // Debug log
+        setSeriesTemporales(response.data);
+      } catch (err) {
+        console.error('Error fetching time series:', err);
+        if (err.response?.status === 403) {
+          setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+          setTimeout(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            navigate('/login');
+          }, 3000); // Delay redirect to show error
+        } else {
+          setError('Error al cargar las series temporales');
+          console.error('Error fetching time series:', err);
+          setSeriesTemporales([]);
+        }
+      }
+    };
+
+    fetchEventoDetalles();
+    fetchSeriesTemporales();
+  }, [selectedEvento, navigate]);
+>>>>>>> aacb70f77a47ad518b720ff9c65cc65ded1ec49b
 
   const handleConfirmObservacion = async () => {
     if (!selectedEvento) return;
