@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,4 +27,8 @@ public class DetalleMuestraSismica {
     @JoinColumn(name = "tipo_de_dato_id")
     private TipoDeDato tipoDeDato;
 
+    // AÑADE ESTA RELACIÓN: Un DetalleMuestraSismica pertenece a UNA MuestraSismica
+    @ManyToOne
+    @JoinColumn(name = "muestra_sismica_id") // Nombre de la columna FK en tu tabla DetalleMuestraSismica
+    private MuestraSismica muestraSismica; // <-- Este es el campo que Spring Data busca
 }
