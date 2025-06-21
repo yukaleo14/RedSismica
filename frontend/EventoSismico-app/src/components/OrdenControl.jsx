@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { format, isValid } from 'date-fns';
+import { format } from 'date-fns';
 
 function OrdenControl() {
   const [eventos, setEventos] = useState([]);
   const [selectedEvento, setSelectedEvento] = useState(null);
   const [confirmedEvento, setConfirmedEvento] = useState(null);
   const [observacion, setObservacion] = useState('');
-  const [estadoSismografo, setEstadoSismografo] = useState('Pendiente'); // Estado inicial como Pendiente
+  const [estadoSismografo, setEstadoSismografo] = useState('Autodetectado'); // Cambiado a Autodetectado como estado inicial
   const [currentTime, setCurrentTime] = useState('');
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
@@ -69,10 +69,10 @@ function OrdenControl() {
         const res = await axios.get('/api/eventos/pendientes', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // Asegurarse de que todos los eventos tengan estado Pendiente inicialmente
+        // Asegurarse de que todos los eventos tengan estado Autodetectado inicialmente
         const updatedEventos = res.data.map(evento => ({
           ...evento,
-          estadoEventoId: 1, // Pendiente
+          estadoEventoId: 2, // Autodetectado
         }));
         setEventos(updatedEventos);
       } catch (err) {
@@ -166,7 +166,7 @@ function OrdenControl() {
   const handleFinalAction = () => {
     setActionCompleted(true); // Marca que se completó una acción final
     setConfirmedEvento(null); // Permite volver a seleccionar eventos
-    setEstadoSismografo('Pendiente'); // Restablece el estado inicial
+    setEstadoSismografo('Autodetectado'); // Restablece a Autodetectado
     // Aquí podrías agregar una llamada a la API para guardar el estado final
   };
 
@@ -184,7 +184,7 @@ function OrdenControl() {
     <div className="min-h-screen flex flex-col bg-gray-100 p-6">
       <div className="flex justify-between bg-gray-300 p-4 rounded-t-lg">
         <span>{username}</span>
-        <span>Estado Orden: ABIERTO</span>
+        <span>Eventos Sísmicos Auto Detectados No Revisados</span>
         <span>{currentTime}</span>
         <button
           onClick={() => {
@@ -192,7 +192,7 @@ function OrdenControl() {
             localStorage.removeItem('username');
             navigate('/login');
           }}
-          className="bg-red-600 text-white hover:bg-red-800 px-4 py-1 rounded"
+          className="bg-red-600 text-white hover:bg-red-800 px-3 py-1.5 rounded text-sm font-medium"
         >
           Cerrar Sesión
         </button>
@@ -227,7 +227,7 @@ function OrdenControl() {
           )}
           {selectedEvento && !confirmedEvento && (
             <button
-              className="bg-[#ADBAC0] text-white hover:bg-[#29675B] px-4 py-2 rounded mt-2"
+              className="bg-[#ADBAC0] text-white hover:bg-[#29675B] px-3 py-1.5 rounded mt-2 text-sm font-medium"
               onClick={handleConfirmSelection}
             >
               Confirmar Selección
@@ -248,6 +248,8 @@ function OrdenControl() {
                 <div><b>Fecha/Hora:</b> {formatDate(eventoDetalles?.fechaHoraOcurrencia)}</div>
                 <div><b>Ubicación:</b> {eventoDetalles?.ubicacion}</div>
                 <div><b>Magnitud:</b> {eventoDetalles?.magnitud}</div>
+                <div><b>Origen del Epicentro:</b> Latitud: {eventoDetalles?.latitud || 'N/A'}, Longitud: {eventoDetalles?.longitud || 'N/A'}</div>
+                <div><b>Origen del Hipocentro:</b> Latitud: {eventoDetalles?.latitud || 'N/A'}, Longitud: {eventoDetalles?.longitud || 'N/A'}, Profundidad: {eventoDetalles?.profundidad || 'N/A'} km</div>
               </div>
               {revisionData && (
                 <div className="mt-2 p-2 bg-gray-100 rounded">
@@ -329,6 +331,15 @@ function OrdenControl() {
                   className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
+                  onClick={handleRejectEvent}
+                  disabled={!confirmedEvento}
+                >
+                  Rechazar Evento
+                </button>
+                <button
+                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
+                    confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
+                  }`}
                   onClick={() => {
                     if (confirmedEvento) {
                       handleFinalAction();
@@ -338,15 +349,6 @@ function OrdenControl() {
                   disabled={!confirmedEvento}
                 >
                   Confirmar Evento
-                </button>
-                <button
-                  className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
-                    confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
-                  }`}
-                  onClick={handleRejectEvent}
-                  disabled={!confirmedEvento}
-                >
-                  Rechazar Evento
                 </button>
                 <button
                   className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
