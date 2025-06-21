@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 
 function OrdenControl() {
   const [eventos, setEventos] = useState([]);
   const [selectedEvento, setSelectedEvento] = useState(null);
   const [confirmedEvento, setConfirmedEvento] = useState(null);
   const [observacion, setObservacion] = useState('');
-  const [estadoSismografo, setEstadoSismografo] = useState('Autodetectado'); // Cambiado a Autodetectado como estado inicial
+  const [estadoSismografo, setEstadoSismografo] = useState('Autodetectado'); // Estado inicial
   const [currentTime, setCurrentTime] = useState('');
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [seriesTemporales, setSeriesTemporales] = useState([]);
   const [eventoDetalles, setEventoDetalles] = useState(null);
-  const [revisionData, setRevisionData] = useState(null);
   const [actionCompleted, setActionCompleted] = useState(false); // Nuevo estado para rastrear si se completó una acción final
   const navigate = useNavigate();
 
@@ -69,10 +68,10 @@ function OrdenControl() {
         const res = await axios.get('/api/eventos/pendientes', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // Asegurarse de que todos los eventos tengan estado Autodetectado inicialmente
         const updatedEventos = res.data.map(evento => ({
           ...evento,
           estadoEventoId: 2, // Autodetectado
+          revisionData: evento.revisionData || null, // Inicializar revisionData por evento
         }));
         setEventos(updatedEventos);
       } catch (err) {
@@ -99,7 +98,6 @@ function OrdenControl() {
       setEventoDetalles(null);
       setSeriesTemporales([]);
       setConfirmedEvento(null);
-      setRevisionData(null);
       setActionCompleted(false);
       return;
     }
@@ -159,25 +157,73 @@ function OrdenControl() {
 
   const handleConfirmSelection = () => {
     setConfirmedEvento(selectedEvento);
-    setEstadoSismografo('Bloqueado En Revision'); // Cambiar estado al confirmar
+    setEstadoSismografo('Bloqueado En Revision');
+    // Actualizar el estado del evento seleccionado
+    setEventos(prevEventos =>
+      prevEventos.map(evento =>
+        evento.id === selectedEvento.id ? { ...evento, estadoEventoId: 3 } : evento
+      )
+    );
     // Aquí podrías agregar una llamada a la API para actualizar el estado
   };
 
-  const handleFinalAction = () => {
-    setActionCompleted(true); // Marca que se completó una acción final
-    setConfirmedEvento(null); // Permite volver a seleccionar eventos
-    setEstadoSismografo('Autodetectado'); // Restablece a Autodetectado
+  const handleFinalAction = (newState) => {
+    setActionCompleted(true);
+    setConfirmedEvento(null);
+    setEstadoSismografo(newState);
+    // Actualizar el estado del evento seleccionado
+    setEventos(prevEventos =>
+      prevEventos.map(evento =>
+        evento.id === selectedEvento.id ? { ...evento, estadoEventoId: estadoMap[newState] } : evento
+      )
+    );
     // Aquí podrías agregar una llamada a la API para guardar el estado final
   };
 
   const handleRejectEvent = () => {
-    setRevisionData({
+    const revisionData = {
       responsable: username,
       fechaHoraRevision: format(new Date(), 'dd/MM/yyyy HH:mm'),
-    });
+    };
     setEstadoSismografo('Rechazado');
-    handleFinalAction();
+    // Actualizar el evento seleccionado con revisionData
+    setEventos(prevEventos =>
+      prevEventos.map(evento =>
+        evento.id === selectedEvento.id ? { ...evento, revisionData, estadoEventoId: 4 } : evento
+      )
+    );
+    handleFinalAction('Autodetectado'); // Restablece a Autodetectado después de rechazar
     alert('Evento rechazado y actualizado.');
+  };
+
+  const handleConfirmEvent = () => {
+    const revisionData = {
+      responsable: username,
+      fechaHoraRevision: format(new Date(), 'dd/MM/yyyy HH:mm'),
+    };
+    // Actualizar el evento seleccionado con revisionData
+    setEventos(prevEventos =>
+      prevEventos.map(evento =>
+        evento.id === selectedEvento.id ? { ...evento, revisionData, estadoEventoId: 2 } : evento
+      )
+    );
+    handleFinalAction('Autodetectado');
+    alert('Evento confirmado');
+  };
+
+  const handleRequestExpertReview = () => {
+    const revisionData = {
+      responsable: username,
+      fechaHoraRevision: format(new Date(), 'dd/MM/yyyy HH:mm'),
+    };
+    // Actualizar el evento seleccionado con revisionData
+    setEventos(prevEventos =>
+      prevEventos.map(evento =>
+        evento.id === selectedEvento.id ? { ...evento, revisionData, estadoEventoId: 2 } : evento
+      )
+    );
+    handleFinalAction('Autodetectado');
+    alert('Revisión solicitada a experto');
   };
 
   return (
@@ -211,7 +257,8 @@ function OrdenControl() {
                 onClick={() => {
                   if (!confirmedEvento || actionCompleted) {
                     setSelectedEvento(evento);
-                    setActionCompleted(false); // Restablecer al cambiar evento
+                    setEstadoSismografo(estadoMap[evento.estadoEventoId] ? Object.keys(estadoMap)[evento.estadoEventoId - 1] : 'Autodetectado');
+                    setActionCompleted(false);
                   }
                 }}
                 disabled={confirmedEvento && !actionCompleted}
@@ -251,10 +298,10 @@ function OrdenControl() {
                 <div><b>Origen del Epicentro:</b> Latitud: {eventoDetalles?.latitud || 'N/A'}, Longitud: {eventoDetalles?.longitud || 'N/A'}</div>
                 <div><b>Origen del Hipocentro:</b> Latitud: {eventoDetalles?.latitud || 'N/A'}, Longitud: {eventoDetalles?.longitud || 'N/A'}, Profundidad: {eventoDetalles?.profundidad || 'N/A'} km</div>
               </div>
-              {revisionData && (
+              {selectedEvento.revisionData && (
                 <div className="mt-2 p-2 bg-gray-100 rounded">
-                  <div><b>Responsable:</b> {revisionData.responsable}</div>
-                  <div><b>Fecha y Hora Revisión:</b> {revisionData.fechaHoraRevision}</div>
+                  <div><b>Responsable:</b> {selectedEvento.revisionData.responsable}</div>
+                  <div><b>Fecha y Hora Revisión:</b> {selectedEvento.revisionData.fechaHoraRevision}</div>
                 </div>
               )}
             </div>
@@ -340,12 +387,7 @@ function OrdenControl() {
                   className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
-                  onClick={() => {
-                    if (confirmedEvento) {
-                      handleFinalAction();
-                      alert('Evento confirmado');
-                    }
-                  }}
+                  onClick={handleConfirmEvent}
                   disabled={!confirmedEvento}
                 >
                   Confirmar Evento
@@ -354,12 +396,7 @@ function OrdenControl() {
                   className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
-                  onClick={() => {
-                    if (confirmedEvento) {
-                      handleFinalAction();
-                      alert('Revisión solicitada a experto');
-                    }
-                  }}
+                  onClick={handleRequestExpertReview}
                   disabled={!confirmedEvento}
                 >
                   Solicitar Revisión a Experto
@@ -414,8 +451,5 @@ function OrdenControl() {
     </div>
   );
 }
-
-// Asegúrate de importar isValid si no está disponible globalmente
-// import { isValid } from 'date-fns';
 
 export default OrdenControl;
