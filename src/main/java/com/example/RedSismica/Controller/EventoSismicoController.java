@@ -1,6 +1,7 @@
 package com.example.RedSismica.Controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ import com.example.RedSismica.Mapper.MuestraSismicaMapper;
 import com.example.RedSismica.Mapper.SerieTemporalMapper;
 import com.example.RedSismica.Model.CambioEstado;
 import com.example.RedSismica.Model.Clasificacion;
+import com.example.RedSismica.Model.EstacionSismologica;
 import com.example.RedSismica.Model.EstadoEvento;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Model.SerieTemporal;
@@ -144,12 +146,34 @@ public class EventoSismicoController {
     }
 
     // 7. Obtener estaciones sismológicas asociadas a un evento
+    // Asegúrate de que tengas el mapper inyectado en tu controlador, por ejemplo:
+    // @Autowired
+    // private EstacionSismologicaMapper estacionMapper;
+
     @GetMapping("/{id}/estaciones")
     public ResponseEntity<List<EstacionSismologicaDTO>> obtenerEstaciones(@PathVariable Long id) {
+        // 1. Obtener el evento por su ID
         EventoSismico evento = eventoService.getById(id);
-        List<EstacionSismologicaDTO> dtos = estacionService.obtenerEstaciones(evento).stream()
-            .map(estacionMapper::toDTO)
-            .collect(Collectors.toList());
+
+        // Manejo de caso si el evento no se encuentra
+        if (evento == null) {
+            return ResponseEntity.notFound().build(); // Devuelve 404 Not Found
+        }
+
+        // 2. Obtener la única estación asociada a ese evento
+        EstacionSismologica estacionEntity = evento.getEstacionSismologica();
+
+        // 3. Crear una lista para almacenar el DTO de la estación.
+        // Esta lista contendrá 0 elementos (si no hay estación asociada) o 1 elemento.
+        List<EstacionSismologicaDTO> dtos = new ArrayList<>();
+
+        // 4. Si hay una estación asociada, mapearla a DTO y añadirla a la lista
+        if (estacionEntity != null) {
+            EstacionSismologicaDTO estacionDto = estacionMapper.toDTO(estacionEntity);
+            dtos.add(estacionDto);
+        }
+
+        // 5. Retornar la respuesta HTTP 200 OK con la lista de DTOs
         return ResponseEntity.ok(dtos);
     }
 
