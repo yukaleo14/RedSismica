@@ -121,7 +121,7 @@ function OrdenControl() {
         setEventoDetalles(currentEvento);
         setEditedValues({
           alcance: currentEvento.alcance || '',
-          clasificacion: currentEvento.clasificacion || '',
+          clasificacionId: currentEvento.clasificacionId || '',
           origenGeneracion: currentEvento.origenGeneracion || '',
           magnitud: currentEvento.magnitud || '',
         });
@@ -255,7 +255,7 @@ function OrdenControl() {
         magnitud: originalEvento.magnitud || prevDetalles?.magnitud,
         alcance: originalEvento.alcance || prevDetalles?.alcance,
         origenGeneracion: originalEvento.origenGeneracion || prevDetalles?.origenGeneracion,
-        clasificacion: originalEvento.clasificacion || prevDetalles?.clasificacion,
+        clasificacionId: originalEvento.clasificacionId || prevDetalles?.clasificacionId,
       }));
     }
   };
@@ -271,7 +271,7 @@ function OrdenControl() {
             ? {
                 ...evento,
                 alcance: editedValues.alcance || evento.alcance,
-                clasificacion: editedValues.clasificacion || evento.clasificacion,
+                clasificacionId: editedValues.clasificacionId || evento.clasificacionId,
                 origenGeneracion: editedValues.origenGeneracion || evento.origenGeneracion,
                 magnitud: editedValues.magnitud || evento.magnitud,
               }
@@ -371,8 +371,8 @@ function OrdenControl() {
                 <div><b>Fecha/Hora:</b> {formatDate(eventoDetalles?.fechaHoraOcurrencia)}</div>
                 <div><b>Ubicación:</b> {eventoDetalles?.ubicacion}</div>
                 <div><b>Magnitud:</b> {eventoDetalles?.magnitud || 'N/A'}</div>
-                <div><b>Origen del Epicentro:</b> Latitud: {eventoDetalles?.latitud || 'N/A'}, Longitud: {eventoDetalles?.longitud || 'N/A'}</div>
-                <div><b>Origen del Hipocentro:</b> Latitud: {eventoDetalles?.latitud || 'N/A'}, Longitud: {eventoDetalles?.longitud || 'N/A'}, Profundidad: {eventoDetalles?.profundidad || 'N/A'} km</div>
+                <div><b>Origen del Epicentro:</b> Latitud: {eventoDetalles?.latitudEpicentro || 'N/A'}, Longitud: {eventoDetalles?.longitudEpicentro || 'N/A'}</div>
+                <div><b>Origen del Hipocentro:</b> Latitud: {eventoDetalles?.latitudHipocentro || 'N/A'}, Longitud: {eventoDetalles?.longitudHipocentro || 'N/A'}</div>
               </div>
               {selectedEvento.revisionData && (
                 <div className="mt-2 p-2 bg-gray-100 rounded">
@@ -431,11 +431,11 @@ function OrdenControl() {
                   )}
                 </div>
                 <div>
-                  <b>Clasificación:</b> {isEditing ? editedValues.clasificacion || eventoDetalles?.clasificacion || 'N/A' : eventoDetalles?.clasificacion || 'N/A'}
+                  <b>Clasificación:</b> {isEditing ? editedValues.clasificacionId || eventoDetalles?.clasificacionId || 'N/A' : eventoDetalles?.clasificacionId || 'N/A'}
                   {isEditing && (
                     <input
                       type="text"
-                      value={editedValues.clasificacion || ''}
+                      value={editedValues.clasificacionId || ''}
                       onChange={(e) => handleInputChange('clasificacion', e.target.value)}
                       className="w-full border-b border-gray-300 mt-1 p-1 focus:outline-none"
                     />
