@@ -487,47 +487,59 @@ function OrdenControl() {
             </div>
             {/* Series Temporales */}
             <div className="col-span-1">
-              <h3 className="font-semibold mb-2">Series Temporales</h3>
-              {seriesTemporales.length === 0 ? (
-                <p className="text-gray-500">No hay series temporales para este evento</p>
-              ) : (
-                <div className="mb-4">
-                  {Object.values(
-                    seriesTemporales.reduce((acc, serie) => {
-                      const station = serie.estacionSismologica || 'Sin estación';
-                      if (!acc[station]) acc[station] = [];
-                      acc[station].push(serie);
-                      return acc;
-                    }, {})
-                  ).map((stationSeries, index) => (
-                    <div key={index} className="mb-4 border p-2 rounded">
-                      <h4 className="font-medium mb-2">Estación: {stationSeries[0].estacionSismologica || 'Sin estación'}</h4>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="bg-gray-200">
-                              <th className="p-2 border">Instante de Tiempo</th>
-                              <th className="p-2 border">Velocidad de Onda (m/s)</th>
-                              <th className="p-2 border">Frecuencia de Onda (Hz)</th>
-                              <th className="p-2 border">Longitud (m)</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {stationSeries.map((serie, idx) => (
-                              <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
-                                <td className="p-2 border">{formatDate(serie.timestamp || serie.fechaHoraOcurrencia)}</td>
-                                <td className="p-2 border">{serie.velocidadOnda || 'N/A'}</td>
-                                <td className="p-2 border">{serie.frecuenciaOnda || 'N/A'}</td>
-                                <td className="p-2 border">{serie.longitud || 'N/A'}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+               <h3 className="font-semibold mb-2">Series Temporales</h3>
+  {seriesTemporales.length === 0 ? (
+    <p className="text-gray-500">No hay series temporales para este evento</p>
+  ) : (
+    <div className="mb-4">
+      {/* Grouping by estacionId (assuming it's unique per station) */}
+      {Object.values(
+        seriesTemporales.reduce((acc, serie) => {
+          // Use estacionId for grouping
+          const stationKey = serie.estacionId || 'unknown-station';
+          if (!acc[stationKey]) {
+            acc[stationKey] = {
+              id: stationKey,
+              name: `Estación ID: ${stationKey}`, // Placeholder, you might fetch actual names
+              series: []
+            };
+          }
+          acc[stationKey].series.push(serie);
+          return acc;
+        }, {})
+      ).map((stationGroup, index) => (
+        <div key={stationGroup.id || index} className="mb-4 border p-2 rounded">
+          <h4 className="font-medium mb-2">Estación: {stationGroup.name}</h4>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="p-2 border">Instante de Tiempo</th>
+                  <th className="p-2 border">Velocidad de Onda (m/s)</th>
+                  <th className="p-2 border">Frecuencia de Onda (Hz)</th>
+                  <th className="p-2 border">Longitud (m)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Iterate over samples for each time series entry */}
+                {stationGroup.series.map((serie, serieIdx) => (
+                  // Each 'serie' object has a 'muestrasSismicas' array
+                  serie.muestrasSismicas.map((muestra, muestraIdx) => (
+                    <tr key={`${serie.id}-${muestraIdx}`} className={(serieIdx + muestraIdx) % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
+                      <td className="p-2 border">{formatDate(muestra.fechaHoraMuestra)}</td>
+                      <td className="p-2 border">{muestra.velocidad || 'N/A'}</td>
+                      <td className="p-2 border">{muestra.frecuencia || 'N/A'}</td>
+                      <td className="p-2 border">{muestra.longitud || 'N/A'}</td>
+                    </tr>
+                  ))
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
               <div className="mt-4 flex flex-col gap-2">
                 <button
                   className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
