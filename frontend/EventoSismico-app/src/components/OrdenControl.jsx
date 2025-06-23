@@ -67,7 +67,7 @@ function OrdenControl() {
       return;
     }
 
-    const fetchEventos = async () => {
+    const mostrarEventosSismicoParaSelecc = async () => {
       try {
         const res = await axios.get('/api/eventos/pendientes', {
           headers: { Authorization: `Bearer ${token}` },
@@ -84,7 +84,7 @@ function OrdenControl() {
       }
     };
 
-    fetchEventos();
+   mostrarEventosSismicoParaSelecc();
 
     const updateTime = () => {
       const now = new Date();
@@ -111,7 +111,7 @@ function OrdenControl() {
     const token = localStorage.getItem('token');
     console.log('Fetching details for evento ID:', selectedEvento.id);
 
-    const fetchEventoDetalles = async () => {
+    const tomarSeleccEventoSismico = async () => {
       try {
         const response = await axios.get(`/api/eventos/${selectedEvento.id}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -164,7 +164,7 @@ function OrdenControl() {
       }
     };
 
-    fetchEventoDetalles();
+    tomarSeleccEventoSismico();
     fetchSeriesTemporales();
   }, [selectedEvento, navigate, eventos]);
 

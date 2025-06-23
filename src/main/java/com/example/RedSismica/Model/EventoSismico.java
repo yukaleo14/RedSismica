@@ -76,6 +76,10 @@ public class EventoSismico {
     public void bloquear() {
         throw new UnsupportedOperationException("Unimplemented method 'bloquear'");
     }
+
+    public String getDatosPrincipales() {
+        return "Obteniendo datos principales del evento sismico: ";
+    }
 }
 
 

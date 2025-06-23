@@ -15,4 +15,6 @@ public interface EventoSismicoRepository extends JpaRepository<EventoSismico, Lo
     // EventoSismicoRepository.java
     List<EventoSismico> findByAutoDetectadoTrueOrPendienteRevisionTrue();
 
+    List<EventoSismico> OrderByFechaHoraOcurrenciaDesc();
+
 }

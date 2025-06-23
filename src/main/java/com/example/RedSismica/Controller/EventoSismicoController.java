@@ -70,8 +70,8 @@ public class EventoSismicoController {
 
     // 1. Obtener eventos autodetectados y pendientes de revisión
     @GetMapping("/pendientes")
-    public ResponseEntity<List<EventoSismicoDTO>> obtenerEventosPendientes() {
-        List<EventoSismico> eventos = eventoService.buscarPendientes();
+    public ResponseEntity<List<EventoSismicoDTO>> buscarEventosSismicosAutoDetectado() {
+        List<EventoSismico> eventos = eventoService.buscarEventosSismicosAutoDetectado();
         List<EventoSismicoDTO> dtoList = eventos.stream()
             .map(eventoMapper::toDTO)
             .collect(Collectors.toList());

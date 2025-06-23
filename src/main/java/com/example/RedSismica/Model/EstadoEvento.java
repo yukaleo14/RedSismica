@@ -43,15 +43,6 @@ public class EstadoEvento {
             return false;
         }
     }
-    //verificamos si el estado es ambito de evento sismico
-    public boolean esAmbitoEventoSismico() {
-        if (ambito.equals("EventoSismico")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 
     public boolean esBloqueadoEnPeticion() {
         if (nombre.equals("BloqueadoEnPeticion")) {

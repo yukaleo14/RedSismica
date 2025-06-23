@@ -10,6 +10,23 @@ public class EstadoEventoService {
         return estado.esBloqueadoEnPeticion();
     }
 
+    public boolean esAutoDetectado(EstadoEvento estado) {
+        return estado.esAutoDetectado();
+    }
+
+    public boolean esPendienteRevision(EstadoEvento estado) {
+        return estado.esPendienteRevision();
+    }
+
+        //verificamos si el estado es ambito de evento sismico
+    public boolean esAmbitoEventoSismico(EstadoEvento estado) {
+        if (estado.getAmbito().equals("EventoSismico")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public EstadoEvento getById(Long nuevoEstadoId) {
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }

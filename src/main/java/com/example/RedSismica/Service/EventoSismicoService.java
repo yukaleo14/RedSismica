@@ -1,5 +1,6 @@
 package com.example.RedSismica.Service;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.RedSismica.Model.Clasificacion;
 import com.example.RedSismica.Model.EventoSismico;
+import com.example.RedSismica.Model.Sesion;
 import com.example.RedSismica.Repository.EventoSismicoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -18,7 +20,7 @@ public class EventoSismicoService {
     
     @Autowired private EventoSismicoRepository repo;
 
-    public List<EventoSismico> buscarPendientes() {
+    public List<EventoSismico> buscarEventosSismicosAutoDetectado() {
     return repo.findByAutoDetectadoTrueOrPendienteRevisionTrue();
     }
 
@@ -28,6 +30,10 @@ public class EventoSismicoService {
 
     public boolean esPendienteRevision(EventoSismico evento) {
         return evento.esPendienteRevision();
+    }
+
+    public String getDatosPrincipales(EventoSismico evento) {
+        return evento.getDatosPrincipales();
     }
 
     public LocalDateTime getFechaHoraOcurrencia(EventoSismico evento) {
@@ -54,6 +60,21 @@ public class EventoSismicoService {
         return evento.getMagnitud();
     }
 
+    public  List<EventoSismico> ordenarEventosPorFechaHora() {
+        return repo.OrderByFechaHoraOcurrenciaDesc();
+    }
+
+    public Date getFechaHoraActual () {
+        return Date.valueOf(LocalDateTime.now().toLocalDate());
+    }
+
+    public String buscarEmpleadoLogueado(SesionService sesion) {
+        return SesionService.getUsuarioLogueado(sesion);
+    }
+
+    public String bloquearEvento() {
+        throw new UnsupportedOperationException("Unimplemented method 'bloquearEvento'");
+    }
     public void asociarClasificacion(Long id, Clasificacion guardada) {
         throw new UnsupportedOperationException("Unimplemented method 'asociarClasificacion'");
     }
