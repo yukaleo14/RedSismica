@@ -18,6 +18,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EstadoEvento {
     
+    public static final EstadoEvento BLOQUEADO = null;
+
     public static LocalDateTime esAutodetectado;
 
     @Id
