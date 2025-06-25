@@ -17,4 +17,6 @@ public class EstacionSismologicaService {
     public List<EstacionSismologica> obtenerEstaciones(EventoSismico evento) {
         return repo.findByEventoSismico(evento);
     }
+
+    
 }

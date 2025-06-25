@@ -23,7 +23,7 @@ public class TipoDeDato {
     private String nombreUnidadDeMedida;
     private Double valorUmbral;
 
-    /*public String esTuDenominacion(String denominacion) {
+    public String esTuDenominacion(String denominacion) {
         if (this.denominacion.equals(denominacion)) {
             return "La denominación es correcta";
         } else {
@@ -33,5 +33,5 @@ public class TipoDeDato {
 
     public String getDenominacion() {
         return denominacion;
-    }*/
+    }
 }

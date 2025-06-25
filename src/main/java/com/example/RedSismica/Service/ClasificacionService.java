@@ -14,4 +14,8 @@ public class ClasificacionService {
     public Clasificacion clasificarInformacion(Clasificacion clasificacion) {
         return repo.save(clasificacion);
     }
+
+    public String getNombre(Clasificacion clasificacion) {
+        return clasificacion.getNombre();
+    }
 }

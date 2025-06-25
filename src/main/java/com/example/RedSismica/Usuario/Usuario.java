@@ -43,8 +43,8 @@ public class Usuario implements UserDetails{
     Rol rol;
 
 
-    public String getEmpleadoLogueado(){
-        return nombre;
+    public static String getEmpleadoLogueado(Usuario usuario){
+        return usuario.nombre;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

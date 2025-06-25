@@ -31,4 +31,13 @@ public class DetalleMuestraSismica {
     @ManyToOne
     @JoinColumn(name = "muestra_sismica_id") // Nombre de la columna FK en tu tabla DetalleMuestraSismica
     private MuestraSismica muestraSismica; // <-- Este es el campo que Spring Data busca
+
+
+    public String getDatos(TipoDeDato tipoDeDato) {
+        if (this.tipoDeDato.equals(tipoDeDato)) {
+            return this.valor;
+        } else {
+            return "Tipo de dato no coincide";
+        }   
+    }
 }

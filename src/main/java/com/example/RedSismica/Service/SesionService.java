@@ -4,8 +4,8 @@ import com.example.RedSismica.Usuario.Usuario;
 
 public class SesionService {
     
-    public String getUsuarioLogueado(Usuario usuario) {
-        return usuario.getNombre();
+    public static String getUsuarioLogueado(Usuario usuario) {
+        return Usuario.getEmpleadoLogueado(usuario);
     }
     
 }

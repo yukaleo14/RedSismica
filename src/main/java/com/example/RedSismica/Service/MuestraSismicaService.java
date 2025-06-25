@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.RedSismica.Model.EstacionSismologica;
 import com.example.RedSismica.Model.MuestraSismica;
 import com.example.RedSismica.Model.SerieTemporal;
 import com.example.RedSismica.Repository.MuestraSismicaRepository;
@@ -16,5 +17,14 @@ public class MuestraSismicaService {
 
     public List<MuestraSismica> obtenerMuestras(SerieTemporal serie) {
         return repo.findBySerieTemporal(serie);
+    }
+
+    public List<EstacionSismologica> obtenerEstacionesSismologicas(SerieTemporal serie) {
+        return repo.findBySerieTemporal(serie)
+                   .stream()
+                   .map(MuestraSismica::getSerieTemporal)
+                   .map(SerieTemporal::getEstacionSismologica)
+                   .distinct()
+                   .toList();
     }
 }

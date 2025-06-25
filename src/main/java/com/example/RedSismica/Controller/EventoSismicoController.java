@@ -80,14 +80,14 @@ public class EventoSismicoController {
 
     // 2. Obtener datos de un evento por ID
     @GetMapping("/{id}")
-    public ResponseEntity<EventoSismicoDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<EventoSismicoDTO> buscarDatosSismicos(@PathVariable Long id) {
         EventoSismico evento = eventoService.getById(id);
         return ResponseEntity.ok(eventoMapper.toDTO(evento));
     }
 
     // 3. Finalizar estado actual y registrar nuevo cambio de estado
     @PostMapping("/{id}/cambiar-estado")
-    public ResponseEntity<CambioEstadoDTO> cambiarEstado(@PathVariable Long id, @RequestParam Long nuevoEstadoId) {
+    public ResponseEntity<CambioEstadoDTO> crearCambioEstado(@PathVariable Long id, @RequestParam Long nuevoEstadoId) {
         EventoSismico evento = eventoService.getById(id);
         CambioEstado actual = cambioEstadoService.getCambioEstadoActual(evento);
         cambioEstadoService.finalizarCambio(actual);
@@ -103,7 +103,7 @@ public class EventoSismicoController {
 
     // 4. Clasificar evento
     @PostMapping("/{id}/clasificar")
-    public ResponseEntity<ClasificacionDTO> clasificar(@PathVariable Long id, @RequestBody ClasificacionDTO dto) {
+    public ResponseEntity<ClasificacionDTO> clasificarInformacion(@PathVariable Long id, @RequestBody ClasificacionDTO dto) {
         Clasificacion clasificacion = clasificacionMapper.toEntity(dto);
         Clasificacion guardada = clasificacionService.clasificarInformacion(clasificacion);
         eventoService.asociarClasificacion(id, guardada);
@@ -112,12 +112,7 @@ public class EventoSismicoController {
 
     // 5. Obtener series temporales de un evento
     @GetMapping("/{id}/series-temporales")
-    public ResponseEntity<List<SerieTemporalDTO>> obtenerSeries(@PathVariable Long id) {
-        /* EventoSismico evento = eventoService.getById(id);
-        List<SerieTemporalDTO> dtos = serieTemporalService.obtenerSeries(evento).stream()
-            .map(serieTemporalMapper::toDTO)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos); */
+    public ResponseEntity<List<SerieTemporalDTO>> obtenerSeriesTemporales(@PathVariable Long id) {
         try {
             EventoSismico evento = eventoService.getById(id);
             if (evento == null) {

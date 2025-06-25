@@ -27,6 +27,14 @@ public class EstadoEventoService {
         }
     }
 
+    public String esRechazado(EstadoEvento estado) {
+        return estado.esRechazado();
+    }
+
+    public boolean esConfirmado(EstadoEvento estado) {
+        return estado.esConfirmado();
+    }
+
     public EstadoEvento getById(Long nuevoEstadoId) {
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }

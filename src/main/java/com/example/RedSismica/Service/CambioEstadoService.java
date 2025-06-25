@@ -23,6 +23,11 @@ public class CambioEstadoService {
         repo.save(cambio);
     }
 
+    public CambioEstado setFechaHoraFin(CambioEstado cambio, LocalDateTime fechaHoraFin) {
+        cambio.setFechaHoraFin(fechaHoraFin);
+        return repo.save(cambio);
+    }
+
     public boolean esActual(CambioEstado cambio) {
         return cambio.esActual();
     }

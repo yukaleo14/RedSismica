@@ -38,8 +38,18 @@ public class MuestraSismica {
     @JoinColumn(name = "detalle_muestra_id", unique = true)
     private DetalleMuestraSismica detalleMuestraSismica;
 
+     public String getDato(DetalleMuestraSismica detalleMuestraSismica) {
+        if (this.detalleMuestraSismica.equals(detalleMuestraSismica)) {
+            return this.detalleMuestraSismica.getValor();
+        } else {
+            return "Detalle de muestra sismica no coincide";
+        }   
+    }
+
     public void getDatos() {
         System.out.println("Fecha y hora de la muestra: " + fechaHoraMuestra);
     }
+
+   
 
 }

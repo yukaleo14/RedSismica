@@ -1,6 +1,7 @@
 package com.example.RedSismica.Repository;
 
 
+import com.example.RedSismica.Model.EstadoEvento;
 import com.example.RedSismica.Model.EventoSismico;
 
 import java.util.List;
@@ -16,5 +17,7 @@ public interface EventoSismicoRepository extends JpaRepository<EventoSismico, Lo
     List<EventoSismico> findByAutoDetectadoTrueOrPendienteRevisionTrue();
 
     List<EventoSismico> OrderByFechaHoraOcurrenciaDesc();
+
+    //EventoSismico saveAll(EstadoEvento nuevoEstadoEvento);
 
 }

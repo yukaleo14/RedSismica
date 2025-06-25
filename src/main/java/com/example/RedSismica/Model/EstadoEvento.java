@@ -62,6 +62,14 @@ public class EstadoEvento {
         }
     }
 
+    public boolean esConfirmado() {
+        if (nombre.equals("Confirmado")) {
+            return true;
+        }   else {  
+            return false;
+        }
+    }
+
     public boolean esActual() {
         throw new UnsupportedOperationException("Unimplemented method 'esActual'");
     }
