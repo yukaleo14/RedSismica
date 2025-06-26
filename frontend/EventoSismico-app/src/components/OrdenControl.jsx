@@ -191,7 +191,7 @@ function OrdenControl() {
     // Aquí podrías agregar una llamada a la API para guardar el estado final
   };
 
-  const handleRejectEvent = () => {
+  const tomarSeleccionarRechazarEvento = () => {
     const revisionData = {
       responsable: username,
       fechaHoraRevision: format(new Date(), 'dd/MM/yyyy HH:mm'),
@@ -300,8 +300,8 @@ function OrdenControl() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 p-6">
       <div className="flex justify-between bg-gray-300 p-4 rounded-t-lg">
-        <span>{username}</span>
-        <span>Eventos Sísmicos Auto Detectados No Revisados</span>
+        <span><span className='font-bold text-lg mb-2'>Usuario:</span> {username}</span>
+        {/* <span>Eventos Sísmicos Auto Detectados No Revisados</span> */}
         <span>{currentTime}</span>
         <button
           onClick={() => {
@@ -316,6 +316,7 @@ function OrdenControl() {
       </div>
       <div className="flex flex-1 mt-4 gap-4">
         <div className="bg-gray-200 rounded-lg p-2 flex flex-col gap-2 w-1/4">
+          <h2 className="font-bold text-lg mb-2">Eventos Sísmicos Pendientes</h2>
           {eventos.length === 0 ? (
             <p className="text-gray-500">No hay eventos pendientes</p>
           ) : (
@@ -385,18 +386,18 @@ function OrdenControl() {
         </div>
         <div className="bg-gray-200 p-4 rounded-lg w-1/4 flex flex-col justify-between">
           <div>
-            <h3 className="font-medium mb-2">Situación Evento Sismico</h3>
+            <h2 className="font-bold text-lg mb-2">Situación Evento Sismico</h2>
             {Object.keys(estadoMap).map((estado) => (
               <div key={estado} className="flex items-center gap-2 mb-2">
                 <span
                   className={`px-2 py-1 rounded ${
                     estadoSismografo === estado
                       ? estado === 'Bloqueado En Revision'
-                        ? 'bg-red-600 text-white'
+                        ? 'bg-amber-400 text-white'
                         : estado === 'Rechazado'
-                        ? 'bg-green-600 text-white'
+                        ? 'bg-red-600 text-white'
                         : estado === 'Confirmado'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-green-600 text-white'
                         : estado === 'Derivado a Experto'
                         ? 'bg-purple-600 text-white'
                         : 'bg-[#ADBAC0] text-white'
@@ -545,7 +546,7 @@ function OrdenControl() {
                   className={`text-white px-3 py-1.5 rounded text-sm font-medium ${
                     confirmedEvento ? 'bg-[#415f6e] hover:bg-[#29675B]' : 'bg-[#373737]'
                   }`}
-                  onClick={handleRejectEvent}
+                  onClick={tomarSeleccionarRechazarEvento}
                   disabled={!confirmedEvento}
                 >
                   Rechazar Evento

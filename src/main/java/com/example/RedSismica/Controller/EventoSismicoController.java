@@ -44,6 +44,7 @@ import com.example.RedSismica.Service.EstadoEventoService;
 import com.example.RedSismica.Service.EventoSismicoService;
 import com.example.RedSismica.Service.MuestraSismicaService;
 import com.example.RedSismica.Service.SerieTemporalService;
+import com.example.RedSismica.Service.SismogramaService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -67,6 +68,7 @@ public class EventoSismicoController {
     //private final EstacionSismologicaService estacionService;
     private final EstacionSismologicaMapper estacionMapper;
     private final EventoSismicoRepository eventoSismicoRepository;
+    private final SismogramaService sismogramaService;
 
     // 1. Obtener eventos autodetectados y pendientes de revisión
     @GetMapping("/pendientes")
@@ -106,7 +108,7 @@ public class EventoSismicoController {
     public ResponseEntity<ClasificacionDTO> clasificarInformacion(@PathVariable Long id, @RequestBody ClasificacionDTO dto) {
         Clasificacion clasificacion = clasificacionMapper.toEntity(dto);
         Clasificacion guardada = clasificacionService.clasificarInformacion(clasificacion);
-        eventoService.asociarClasificacion(id, guardada);
+        eventoService.obtenerClasificacion(guardada);
         return ResponseEntity.ok(clasificacionMapper.toDTO(guardada));
     }
 
@@ -140,11 +142,13 @@ public class EventoSismicoController {
         return ResponseEntity.ok(dtos);
     }
 
-    // 7. Obtener estaciones sismológicas asociadas a un evento
-    // Asegúrate de que tengas el mapper inyectado en tu controlador, por ejemplo:
-    // @Autowired
-    // private EstacionSismologicaMapper estacionMapper;
+    @PostMapping("/{id}/procesar-evento")
+    public ResponseEntity<Void> invocarCU(@PathVariable Long id) {
+        sismogramaService.procesarSismograma(id);
+        return ResponseEntity.ok().build();
+    }
 
+    // 7. Obtener estaciones sismológicas asociadas a un evento
     @GetMapping("/{id}/estaciones")
     public ResponseEntity<List<EstacionSismologicaDTO>> obtenerEstaciones(@PathVariable Long id) {
         // 1. Obtener el evento por su ID
@@ -174,7 +178,7 @@ public class EventoSismicoController {
 
     //8.Actualizar Datos Específicos de un Evento Sísmico
      @PutMapping("/{id}")
-    public ResponseEntity<EventoSismico> actualizarEvento(
+    public ResponseEntity<EventoSismico> cambiarEstadoEventoSismico(
             @PathVariable Long id,
             @RequestBody EventoSismicoDTO eventoDto) {
 

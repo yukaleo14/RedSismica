@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.RedSismica.Model.CambioEstado;
+import com.example.RedSismica.Model.EstadoEvento;
 import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Repository.CambioEstadoRepository;
 
@@ -28,7 +29,7 @@ public class CambioEstadoService {
         return repo.save(cambio);
     }
 
-    public boolean esActual(CambioEstado cambio) {
+    public boolean esActual(EstadoEvento cambio) {
         return cambio.esActual();
     }
 
