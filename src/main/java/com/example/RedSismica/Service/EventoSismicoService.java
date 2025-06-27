@@ -150,4 +150,11 @@ public class EventoSismicoService {
         return "Estado actualizado a: " + nuevoEstado.getNombre();
     }
 
+    //El evento sismico no puede volver a bloqueado si ya fue confirmado o rechazado
+    public String bloquearEventoSismico(EventoSismico evento) {
+        if (evento.getEstadoEvento().getNombre().equals("Confirmado") || evento.getEstadoEvento().getNombre().equals("Rechazado")) {
+            throw new IllegalStateException("El evento sismico no puede volver a bloqueado si ya fue confirmado o rechazado");
+        }
+        return "El evento sísmico ha sido bloqueado correctamente";
+    }
 }

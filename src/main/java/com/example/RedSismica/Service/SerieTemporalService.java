@@ -38,4 +38,8 @@ public class SerieTemporalService {
         return sismografoService.esSismografo(serie.getEstacionSismologica());
     }
     
+    //listar estacion sismologica en las que pertenece la serie temporal
+    public List<SerieTemporal> listarEstacionesSismologicas(SerieTemporal serie) {
+        return repo.findByEstacionSismologica(serie.getEstacionSismologica());
+    }
 }
