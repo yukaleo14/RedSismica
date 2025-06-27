@@ -78,6 +78,9 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "http://localhost:5173")
 public class GestorAdmResultadoEventoSismico {
 
+    @Autowired
+    private EventoSismicoRepository repo;
+
     private final EventoSismicoService eventoService;
     private final EventoSismicoMapper eventoMapper;
     private final CambioEstadoService cambioEstadoService;
@@ -97,19 +100,65 @@ public class GestorAdmResultadoEventoSismico {
     // 1. Obtener eventos autodetectados y pendientes de revisión
     @GetMapping("/pendientes")
     public ResponseEntity<List<EventoSismicoDTO>> buscarEventosSismicosAutoDetectado() {
-    List<EventoSismico> eventos = eventoService.obtenerEventosSismicosPendientes();
-    List<EventoSismicoDTO> dtoList = eventos.stream()
-       .map(eventoMapper::toDTO)
-       .collect(Collectors.toList());
-    return ResponseEntity.ok(dtoList);
+        List<EventoSismico> eventos = new ArrayList<>();
+            eventos.addAll(eventoService.esAutoDetectado());
+            eventos.addAll(eventoService.esPendienteRevision());
+        List<EventoSismicoDTO> dtoList = eventos.stream()
+            .map(eventoMapper::toDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
+    }
+
+    public String getDatosPrincipales(EventoSismico evento) {
+        return evento.getDatosPrincipales();
+    }
+
+    public  List<EventoSismico> ordenarEventosPorFechaHora() {
+        return repo.OrderByFechaHoraOcurrenciaDesc();
+    }
+
+    public String tomarSeleccEventoSismico(EventoSismico evento) {
+        return "Evento Sismico seleccionado: " + evento.getId();
+    }
+
+    public String buscarEstadoBloqueadoRevision(EstadoEvento estado) {
+        if (estado.esBloqueadoEnRevision()) {
+            return "El estado del evento es BLOQUEADO";
+        } else {
+            return "El estado del evento no es BLOQUEADO";
+        }
+    }
+
+    public Date getFechaHoraActual () {
+        return Date.valueOf(LocalDateTime.now().toLocalDate());
+    }
+
+    public String buscarEmpleadoLogueado(Usuario usuario) {
+        return SesionService.getUsuarioLogueado(usuario);
+    }
+
+    public EventoSismico bloquearEvento(Long eventoId, Usuario usuarioQueSelecciona, ResultadoRevisionDTO datosInicialesRevision) {
+        // --- Paso 1: Bloquear el Evento (para que nadie más lo revise) ---
+        EventoSismico evento = repo.findById(eventoId)
+            .orElseThrow(() -> new RuntimeException("Evento Sísmico no encontrado con ID: " + eventoId));
+
+        // Solo bloquea si no está ya bloqueado
+        if (evento.getEstadoEvento() != EstadoEvento.BLOQUEADO) {
+            evento.setEstadoEvento(EstadoEvento.BLOQUEADO);
+            //eventoSismicoRepository.save(evento); // Persistir el cambio a estado BLOQUEADO
+        } else {
+            System.out.println("Evento ID " + eventoId + " ya estaba bloqueado. No se requiere acción adicional.");
+        }
+
+        // --- Paso 2: INICIAR el proceso de revisión llamando a revisar() ---
+        // Aquí es donde 'bloquearEvento' invoca a 'revisar'.
+        EventoSismico eventoRevisado = eventoService.revisar(eventoId, datosInicialesRevision, usuarioQueSelecciona, cambioEstadoService);
+
+        return eventoRevisado; // Devuelve el evento ya revisado
     }
  
     // 2. Obtener datos de un evento por ID
     @GetMapping("/{id}")
-    //public ResponseEntity<EventoSismicoDTO> buscarDatosSismicos(@PathVariable Long id) {
-    //    EventoSismico evento = eventoService.getById(id);
-    //   return ResponseEntity.ok(eventoMapper.toDTO(evento));
-    //}
     public ResponseEntity<EventoSismicoDTO> buscarDatosSismicos(@PathVariable Long id) {
         try {
             EventoSismico evento = eventoService.getById(id);
@@ -122,6 +171,81 @@ public class GestorAdmResultadoEventoSismico {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // O un mensaje de error personalizado
         }
     }
+
+    @PostMapping("/{id}/procesar-evento")
+    public ResponseEntity<Void> invocarCU(@PathVariable Long id) {
+        sismogramaService.procesarSismograma(id);
+        return ResponseEntity.ok().build();
+    }
+
+    public String tomarSeleccionarRechazarEvento(EventoSismico evento) {
+        return "Evento Sismico seleccionado para rechazar: " + evento.getId();
+    }
+
+     public void validarDatosAccion(EstadoEventoService estadoEventoService, EventoSismico evento) {
+        Boolean ambito = estadoEventoService.esAmbitoEventoSismico(evento.getEstadoEvento());
+
+        // Obtener el nombre del estado del evento
+        String nombreEstado = null;
+        if (evento.getEstadoEvento() != null) {
+            nombreEstado = evento.getEstadoEvento().getNombre();
+        }
+        String estadoRechazado = estadoEventoService.esRechazado(evento.getEstadoEvento());
+
+        // Puedes usar estos valores para validaciones, logs, etc.
+        System.out.println("Ámbito del evento: " + ambito);
+        System.out.println("Estado seleccionado: " + nombreEstado);
+        System.out.println("¿Es rechazado?: " + estadoRechazado);
+
+    }
+
+    public String obtenerFechaHoraActual() {
+        // Obtener la fecha y hora actual
+        LocalDateTime fechaHoraActual = LocalDateTime.now();
+        // Formatear la fecha y hora como una cadena
+        return fechaHoraActual.toString();
+    }
+
+    public boolean esAmbitoEventoSismico(EstadoEvento estadoEvento) {
+        return estadoEventoService.esAmbitoEventoSismico(estadoEvento);
+    }
+
+    public String esRechazado(EstadoEvento estadoEvento) {
+        return estadoEventoService.esRechazado(estadoEvento);
+    }
+
+     @PutMapping("/{id}")
+    public ResponseEntity<EventoSismico> cambiarEstadoEventoSismico(
+            @PathVariable Long id,
+            @RequestBody EventoSismicoDTO eventoDto) {
+
+        Optional<EventoSismico> eventoExistente = eventoSismicoRepository.findById(id);
+
+        if (eventoExistente.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        EventoSismico evento = eventoExistente.get();
+
+        evento.setMagnitud(eventoDto.getMagnitud());
+        evento.setAlcance(eventoDto.getAlcance());
+        evento.setOrigenGeneracion(eventoDto.getOrigenGeneracion());
+
+        // Campos de revisión
+        evento.setFechaHoraRevision(LocalDateTime.now());
+        evento.setResponsableRevision(eventoDto.getResponsableRevision());
+
+        try {
+            EventoSismico eventoActualizado = eventoSismicoRepository.save(evento);
+            return new ResponseEntity<>(eventoActualizado, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Metodos utiles para el controlador
+    //-----------------------------------------------------------------------------------------------------------
+
 
     // 3. Finalizar estado actual y registrar nuevo cambio de estado
     @PostMapping("/{id}/cambiar-estado")
@@ -142,12 +266,13 @@ public class GestorAdmResultadoEventoSismico {
 
     // 4. Clasificar evento
     @PostMapping("/{id}/clasificar")
-    public ResponseEntity<ClasificacionDTO> clasificarInformacion(@PathVariable Long id, @RequestBody ClasificacionDTO dto) {
+    public ResponseEntity<ClasificacionDTO> clasificar(@PathVariable Long id, @RequestBody ClasificacionDTO dto) {
        Clasificacion clasificacion = clasificacionMapper.toEntity(dto);
-       Clasificacion guardada = clasificacionService.clasificarInformacion(clasificacion);
+       Clasificacion guardada = clasificacionService.clasificar(clasificacion);
        eventoService.obtenerClasificacion(guardada);
        return ResponseEntity.ok(clasificacionMapper.toDTO(guardada));
     }
+    
     // 5. Obtener series temporales de un evento
     @GetMapping("/{id}/series-temporales")
     public ResponseEntity<List<SerieTemporalDTO>> obtenerSeriesTemporales(@PathVariable Long id) {
@@ -179,14 +304,6 @@ public class GestorAdmResultadoEventoSismico {
         return ResponseEntity.ok(dtos);
     }
 
-    @PostMapping("/{id}/procesar-evento")
-    public ResponseEntity<Void> invocarCU(@PathVariable Long id) {
-        sismogramaService.procesarSismograma(id);
-        return ResponseEntity.ok().build();
-    }
-
-
-
     // 7. Obtener estaciones sismológicas asociadas a un evento
     @GetMapping("/{id}/estaciones")
     public ResponseEntity<List<EstacionSismologicaDTO>> obtenerEstaciones(@PathVariable Long id) {
@@ -213,209 +330,6 @@ public class GestorAdmResultadoEventoSismico {
 
         //5. Retornar la respuesta HTTP 200 OK con la lista de DTOs
        return ResponseEntity.ok(dtos);
-    }
-    
-
-
-
-    //8.Actualizar Datos Específicos de un Evento Sísmico
-     @PutMapping("/{id}")
-    public ResponseEntity<EventoSismico> cambiarEstadoEventoSismico(
-            @PathVariable Long id,
-            @RequestBody EventoSismicoDTO eventoDto) {
-
-        Optional<EventoSismico> eventoExistente = eventoSismicoRepository.findById(id);
-
-        if (eventoExistente.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        EventoSismico evento = eventoExistente.get();
-
-        evento.setMagnitud(eventoDto.getMagnitud());
-        evento.setAlcance(eventoDto.getAlcance());
-        evento.setOrigenGeneracion(eventoDto.getOrigenGeneracion());
-
-        // Campos de revisión
-        evento.setFechaHoraRevision(LocalDateTime.now());
-        evento.setResponsableRevision(eventoDto.getResponsableRevision());
-
-        try {
-            EventoSismico eventoActualizado = eventoSismicoRepository.save(evento);
-            return new ResponseEntity<>(eventoActualizado, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-
-
-
-
-
-    //----------------------------------------------METODOS QUE ESTABAN EN EL SERVICIO DE EVENTO SISMICO------------------------------------------------
-
-    @Autowired private EventoSismicoRepository repo;
-
-    //public List<EventoSismico> buscarEventosSismicosAutoDetectado() {
-    //return repo.findByAutoDetectadoTrueOrPendienteRevisionTrue();
-    //}
-
-    public boolean esAutoDetectado(EventoSismico evento) {
-        return evento.esAutoDetectado();
-    }
-
-    public boolean esPendienteRevision(EventoSismico evento) {
-        return evento.esPendienteRevision();
-    }
-
-    public String getDatosPrincipales(EventoSismico evento) {
-        return evento.getDatosPrincipales();
-    }
-
-    public LocalDateTime getFechaHoraOcurrencia(EventoSismico evento) {
-        return evento.getFechaHoraOcurrencia();
-    }
-
-    public double getLatitudEpicentro(EventoSismico evento) {
-        return evento.getLatitudEpicentro();
-    }
-
-    public double getLongitudEpicentro(EventoSismico evento) {
-        return evento.getLongitudEpicentro();
-    }
-
-    public double getLatitudHipocentro(EventoSismico evento) {
-        return evento.getLatitudHipocentro();
-    }
-
-    public double getLongitudHipocentro(EventoSismico evento) {
-        return evento.getLongitudHipocentro();
-    }
-
-    public double getMagnitud(EventoSismico evento) {
-        return evento.getMagnitud();
-    }
-
-    public  List<EventoSismico> ordenarEventosPorFechaHora() {
-        return repo.OrderByFechaHoraOcurrenciaDesc();
-    }
-
-    public Date getFechaHoraActual () {
-        return Date.valueOf(LocalDateTime.now().toLocalDate());
-    }
-
-    public String buscarEmpleadoLogueado(Usuario usuario) {
-        return SesionService.getUsuarioLogueado(usuario);
-    }
-
-    public EventoSismico bloquearEvento(Long eventoId, Usuario usuarioQueSelecciona, ResultadoRevisionDTO datosInicialesRevision) {
-        // --- Paso 1: Bloquear el Evento (para que nadie más lo revise) ---
-        EventoSismico evento = repo.findById(eventoId)
-            .orElseThrow(() -> new RuntimeException("Evento Sísmico no encontrado con ID: " + eventoId));
-
-        // Solo bloquea si no está ya bloqueado
-        if (evento.getEstadoEvento() != EstadoEvento.BLOQUEADO) {
-            evento.setEstadoEvento(EstadoEvento.BLOQUEADO);
-            //eventoSismicoRepository.save(evento); // Persistir el cambio a estado BLOQUEADO
-        } else {
-            System.out.println("Evento ID " + eventoId + " ya estaba bloqueado. No se requiere acción adicional.");
-        }
-
-        // --- Paso 2: INICIAR el proceso de revisión llamando a revisar() ---
-        // Aquí es donde 'bloquearEvento' invoca a 'revisar'.
-        EventoSismico eventoRevisado = revisar(eventoId, datosInicialesRevision, usuarioQueSelecciona);
-
-        return eventoRevisado; // Devuelve el evento ya revisado
-}
-
-    public EventoSismico revisar(Long eventoId, ResultadoRevisionDTO datosDeLaRevision, Usuario usuarioResponsable) {
-        // ... Código previo para cargar y validar el evento ...
-
-        // Actualiza el estado del evento sísmico.
-        String accionFinal = datosDeLaRevision.getComentariosAdicionales();
-        // Cargar el evento sísmico a revisar
-        EventoSismico evento = repo.findById(eventoId)
-            .orElseThrow(() -> new RuntimeException("Evento Sísmico no encontrado con ID: " + eventoId));
-
-        EstadoEvento nuevoEstadoEvento = new EstadoEvento();
-        if ("Rechazado".equalsIgnoreCase(accionFinal)) {
-            nuevoEstadoEvento.setNombre(accionFinal);
-        } else if ("Confirmado".equalsIgnoreCase(accionFinal)) {
-            nuevoEstadoEvento.setNombre(accionFinal);
-        } else {
-            throw new IllegalArgumentException("Acción de revisión final no reconocida: " + accionFinal);
-        }
-
-        evento.setEstadoEvento(nuevoEstadoEvento);
-        EventoSismico eventoConTodosLosCambios = repo.save(evento);
-
-        return eventoConTodosLosCambios;
-    }
-
-    public String getAlcance(EventoSismico evento) {
-        return evento.getAlcance();
-    }
-
-    public String getOrigenGeneracion(EventoSismico evento) {
-        return evento.getOrigenGeneracion();
-    }
-
-
-    public String obtenerClasificacion(Clasificacion clasificacion) {
-        return clasificacion.getNombre();
-    }
-
-    public void validarDatosAccion(EstadoEventoService estadoEventoService, EventoSismico evento) {
-    Boolean ambito = estadoEventoService.esAmbitoEventoSismico(evento.getEstadoEvento());
-
-    // Obtener el nombre del estado del evento
-    String nombreEstado = null;
-    if (evento.getEstadoEvento() != null) {
-        nombreEstado = evento.getEstadoEvento().getNombre();
-    }
-    String estadoRechazado = estadoEventoService.esRechazado(evento.getEstadoEvento());
-
-    // Puedes usar estos valores para validaciones, logs, etc.
-    System.out.println("Ámbito del evento: " + ambito);
-    System.out.println("Estado seleccionado: " + nombreEstado);
-    System.out.println("¿Es rechazado?: " + estadoRechazado);
-
-    }
-
-    public EventoSismico rechazar(Long eventoId, EstadoEventoService estadoEventoService, CambioEstadoService cambioEstadoService, Usuario usuarioService) {
-
-        EventoSismico evento = repo.findById(eventoId)
-            .orElseThrow(() -> new RuntimeException("Evento Sísmico no encontrado con ID: " + eventoId));
-
-        CambioEstado cambioActual = cambioEstadoService.esActual(evento.getEstadoEvento()) ? cambioEstadoService.getCambioEstadoActual(evento) : null;
-        if (cambioActual != null) {
-            cambioEstadoService.finalizarCambio(cambioActual);
-        }
-        CambioEstado nuevoCambio = new CambioEstado();
-        nuevoCambio.setEventoSismico(evento);
-        nuevoCambio.setFechaHoraInicio(LocalDateTime.now());
-        nuevoCambio.setEstadoEvento(estadoEventoService.getById(eventoId));
-
-        cambioEstadoService.crearCambioEstado(nuevoCambio);
-
-        return repo.save(evento);
-    }
-
-    public String setEstado(EventoSismico evento, EstadoEvento nuevoEstado) {
-        if (nuevoEstado == null) {
-            throw new IllegalArgumentException("El nuevo estado no puede ser nulo");
-        }   
-        evento.setEstadoEvento(nuevoEstado);
-        repo.save(evento);
-        return "Estado actualizado a: " + nuevoEstado.getNombre();
-    }
-
-
-    public EventoSismico getById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Evento con ID " + id + " no encontrado"));
     }
 
 }
