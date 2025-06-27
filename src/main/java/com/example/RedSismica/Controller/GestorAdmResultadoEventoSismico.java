@@ -305,31 +305,20 @@ public class GestorAdmResultadoEventoSismico {
     }
 
     // 7. Obtener estaciones sismológicas asociadas a un evento
-    @GetMapping("/{id}/estaciones")
+   @GetMapping("/{id}/estaciones")
     public ResponseEntity<List<EstacionSismologicaDTO>> obtenerEstaciones(@PathVariable Long id) {
-        // 1. Obtener el evento por su ID
         EventoSismico evento = eventoService.getById(id);
 
-        // Manejo de caso si el evento no se encuentra
         if (evento == null) {
-            return ResponseEntity.notFound().build(); // Devuelve 404 Not Found
+            return ResponseEntity.notFound().build();
         }
 
-        // 2. Obtener la única estación asociada a ese evento
-        EstacionSismologica estacionEntity = evento.getEstacionSismologica();
+        List<EstacionSismologica> estaciones = evento.getEstacionesSismologicas();
+        List<EstacionSismologicaDTO> dtos = estaciones.stream()
+            .map(estacionMapper::toDTO)
+            .collect(Collectors.toList());
 
-        // 3. Crear una lista para almacenar el DTO de la estación.
-        // Esta lista contendrá 0 elementos (si no hay estación asociada) o 1 elemento.
-        List<EstacionSismologicaDTO> dtos = new ArrayList<>();
-
-        // 4. Si hay una estación asociada, mapearla a DTO y añadirla a la lista
-       if (estacionEntity != null) {
-           EstacionSismologicaDTO estacionDto = estacionMapper.toDTO(estacionEntity);
-           dtos.add(estacionDto);
-       }
-
-        //5. Retornar la respuesta HTTP 200 OK con la lista de DTOs
-       return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(dtos);
     }
 
 }
