@@ -1,7 +1,7 @@
 package com.example.RedSismica.Repository;
 
 
-import com.example.RedSismica.Model.EstadoEvento;
+//import com.example.RedSismica.Model.EstadoEvento;
 import com.example.RedSismica.Model.EventoSismico;
 
 import java.util.List;
