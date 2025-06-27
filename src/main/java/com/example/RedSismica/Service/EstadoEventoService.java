@@ -1,29 +1,50 @@
 package com.example.RedSismica.Service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.RedSismica.Model.EstadoEvento;
+import com.example.RedSismica.Model.EventoSismico;
+import com.example.RedSismica.Repository.EventoSismicoRepository;
 
 @Service
 public class EstadoEventoService {
+
+    @Autowired private EventoSismicoRepository repo;
+
     public boolean esBloqueadoEnRevision(EstadoEvento estado) {
-        return estado.esBloqueadoEnPeticion();
+        return estado.esBloqueadoEnRevision();
     }
 
-    public boolean esAutoDetectado(EstadoEvento estado) {
-        return estado.esAutoDetectado();
+    public List<EventoSismico> esAutoDetectado() {
+        return repo.findByAutoDetectadoTrue();
     }
 
-    public boolean esPendienteRevision(EstadoEvento estado) {
-        return estado.esPendienteRevision();
+    public List<EventoSismico> esPendienteRevision() {
+        return repo.findByPendienteRevisionTrue();
     }
 
-        //verificamos si el estado es ambito de evento sismico
     public boolean esAmbitoEventoSismico(EstadoEvento estado) {
         if (estado.getAmbito().equals("EventoSismico")) {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public String setEstado(EstadoEvento estado) {
+        if (estado.getNombre().equals("AutoDetectado")) {
+            return "El evento es autodetectado";
+        } else if (estado.getNombre().equals("PendienteRevision")) {
+            return "El evento está pendiente de revisión";
+        } else if (estado.getNombre().equals("BloqueadoEnRevision")) {
+            return "El evento está bloqueado en revisión";
+        } else if (estado.getNombre().equals("Rechazado")) {
+            return "El evento es rechazado";
+        } else {
+            return "Estado desconocido";
         }
     }
 

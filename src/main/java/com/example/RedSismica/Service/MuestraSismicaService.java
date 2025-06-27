@@ -14,10 +14,17 @@ import com.example.RedSismica.Repository.MuestraSismicaRepository;
 public class MuestraSismicaService {
     @Autowired 
     private MuestraSismicaRepository repo;
+    @Autowired
+    private DetalleMuestraSismicaService detalleMuestraSismicaService;
 
     public List<MuestraSismica> obtenerMuestras(SerieTemporal serie) {
         return repo.findBySerieTemporal(serie);
     }
+
+   public void getDatos(TipoDeDatoService tipoDeDatoService) {
+        detalleMuestraSismicaService.getDatos(tipoDeDatoService);
+    }
+
 
     public List<EstacionSismologica> obtenerEstacionesSismologicas(SerieTemporal serie) {
         return repo.findBySerieTemporal(serie)

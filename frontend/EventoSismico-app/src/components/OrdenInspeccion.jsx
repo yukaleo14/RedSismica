@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 function OrdenInspeccion() {
   const navigate = useNavigate();
 
-  const handleCerrar = () => {
-    navigate('/login');
+  const opcionRegistrarResultRevEventoSismico = () => {
+    navigate('/Ordencontrol');
   };
 
   return (
@@ -12,7 +12,7 @@ function OrdenInspeccion() {
       <div className="bg-white p-6 rounded-lg shadow-md flex justify-between w-full max-w-4xl items-center">
         <div className="flex-1 flex justify-center">
           <button
-            onClick={handleCerrar}
+            onClick={opcionRegistrarResultRevEventoSismico}
             className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
           >
             Registrar resultado de revisión manual

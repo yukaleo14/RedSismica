@@ -168,7 +168,7 @@ function OrdenControl() {
     fetchSeriesTemporales();
   }, [selectedEvento, navigate, eventos]);
 
-  const handleConfirmSelection = () => {
+  const solicitarSeleccionAccion = () => {
     setConfirmedEvento(selectedEvento);
     setEstadoSismografo('Bloqueado En Revision');
     setEventos(prevEventos =>
@@ -352,7 +352,7 @@ function OrdenControl() {
           {selectedEvento && !confirmedEvento && (
             <button
               className="bg-[#ADBAC0] text-white hover:bg-[#29675B] px-3 py-1.5 rounded mt-2 text-sm font-medium"
-              onClick={handleConfirmSelection}
+              onClick={solicitarSeleccionAccion}
             >
               Confirmar Selección
             </button>

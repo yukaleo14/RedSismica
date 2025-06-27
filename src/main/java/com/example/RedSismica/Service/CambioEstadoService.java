@@ -33,6 +33,10 @@ public class CambioEstadoService {
         return cambio.esActual();
     }
 
+    public boolean sosActual(EstadoEvento cambio) {
+        return cambio.esActual();
+    }
+    
     public CambioEstado crearCambioEstado(CambioEstado nuevoCambio) {
         throw new UnsupportedOperationException("Unimplemented method 'crearCambioEstado'");
     }

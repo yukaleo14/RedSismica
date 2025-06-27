@@ -17,4 +17,8 @@ public class DetalleMuestraSismicaService {
     public List<DetalleMuestraSismica> obtenerDetalles(MuestraSismica muestra) {
         return repo.findByMuestraSismica(muestra);
     }
+
+    public String getDatos(TipoDeDatoService tipoDeDatoService) {
+        return tipoDeDatoService.esTuDenominacion(null) + " - " + tipoDeDatoService.getDenominacion();
+    }
 }

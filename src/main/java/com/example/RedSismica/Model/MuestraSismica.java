@@ -45,11 +45,6 @@ public class MuestraSismica {
             return "Detalle de muestra sismica no coincide";
         }   
     }
-
-    public void getDatos() {
-        System.out.println("Fecha y hora de la muestra: " + fechaHoraMuestra);
-    }
-
    
 
 }

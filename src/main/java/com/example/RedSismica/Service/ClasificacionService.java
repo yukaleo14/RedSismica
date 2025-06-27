@@ -11,7 +11,7 @@ public class ClasificacionService {
     @Autowired 
     private ClasificacionRepository repo;
 
-    public Clasificacion clasificarInformacion(Clasificacion clasificacion) {
+    public Clasificacion clasificar(Clasificacion clasificacion) {
         return repo.save(clasificacion);
     }
 

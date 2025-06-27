@@ -19,19 +19,9 @@ public class TipoDeDato {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String denominacion;
+    public String denominacion;
     private String nombreUnidadDeMedida;
     private Double valorUmbral;
 
-    public String esTuDenominacion(String denominacion) {
-        if (this.denominacion.equals(denominacion)) {
-            return "La denominación es correcta";
-        } else {
-            return "La denominación no es correcta";
-        }
-    }
-
-    public String getDenominacion() {
-        return denominacion;
-    }
+   
 }

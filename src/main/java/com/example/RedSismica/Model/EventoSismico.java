@@ -80,6 +80,11 @@ public class EventoSismico {
     public String getDatosPrincipales() {
         return "Obteniendo datos principales del evento sismico: ";
     }
+
+    public String getOrigen() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getOrigen'");
+    }
 }
 
 
