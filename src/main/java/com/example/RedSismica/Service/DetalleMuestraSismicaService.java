@@ -18,7 +18,7 @@ public class DetalleMuestraSismicaService {
         return repo.findByMuestraSismica(muestra);
     }
 
-    public String getDatos(TipoDeDatoService tipoDeDatoService) {
-        return tipoDeDatoService.esTuDenominacion(null) + " - " + tipoDeDatoService.getDenominacion();
+    public String getDatos(TipoDeDatoService tipoDeDatoService, Long id, String denominacion) {
+    return tipoDeDatoService.esTuDenominacion(id, denominacion) + " - " + tipoDeDatoService.getDenominacion(id);
     }
 }

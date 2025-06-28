@@ -21,8 +21,8 @@ public class MuestraSismicaService {
         return repo.findBySerieTemporal(serie);
     }
 
-   public void getDatos(TipoDeDatoService tipoDeDatoService) {
-        detalleMuestraSismicaService.getDatos(tipoDeDatoService);
+   public void getDatos(TipoDeDatoService tipoDeDatoService, Long id, String nombre) {
+        detalleMuestraSismicaService.getDatos(tipoDeDatoService, id, nombre);
     }
 
 

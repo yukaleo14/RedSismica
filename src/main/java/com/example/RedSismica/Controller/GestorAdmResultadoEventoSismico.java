@@ -100,13 +100,16 @@ public class GestorAdmResultadoEventoSismico {
     // 1. Obtener eventos autodetectados y pendientes de revisión
     @GetMapping("/pendientes")
     public ResponseEntity<List<EventoSismicoDTO>> buscarEventosSismicosAutoDetectado() {
-        List<EventoSismico> eventos = new ArrayList<>();
-            eventos.addAll(eventoService.esAutoDetectado());
-            eventos.addAll(eventoService.esPendienteRevision());
-        List<EventoSismicoDTO> dtoList = eventos.stream()
-            .map(eventoMapper::toDTO)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(dtoList);
+        try {
+            List<EventoSismico> eventos = eventoService.buscarEventosSismicosAutoDetectado();
+            List<EventoSismicoDTO> dtoList = eventos.stream()
+                .map(eventoMapper::toDTO)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(dtoList);
+        } catch (Exception e) {
+            e.printStackTrace(); // Esto mostrará el error real en la consola
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     public String getDatosPrincipales(EventoSismico evento) {

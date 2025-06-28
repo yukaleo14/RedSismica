@@ -25,8 +25,8 @@ public class SerieTemporalService {
     public List<SerieTemporal> obtenerSeries(EventoSismico evento) {
         return repo.findByEvento(evento);
     }
-    public void getMuestras() {
-       muestraSismicaService.getDatos(tipoDeDatoService);
+    public void getMuestras(Long id, String valor) {
+       muestraSismicaService.getDatos(tipoDeDatoService, id, valor);
     }
 
 

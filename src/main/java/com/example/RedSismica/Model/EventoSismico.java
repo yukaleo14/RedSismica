@@ -62,7 +62,7 @@ public class EventoSismico {
 
     // AÑADE ESTA RELACIÓN: Un EventoSismico tiene UNA EstacionSismologica (la principal)
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)// FetchType.LAZY es generalmente mejor para rendimiento
-    @JoinColumn(name = "id_estacion_sismologica") // Esta es la clave foránea en la tabla 'eventos_sismicos'
+    //@JoinColumn(name = "id_estacion_sismologica") // Esta es la clave foránea en la tabla 'eventos_sismicos'
     private List<EstacionSismologica> estacionesSismologicas = new ArrayList<>();
 
     public boolean esPendienteRevision() {
@@ -86,7 +86,10 @@ public class EventoSismico {
     }
 
     public List<EstacionSismologica> getEstacionesSismologicas() {
-        throw new UnsupportedOperationException("Unimplemented method 'getEstacionesSismologicas'");
+        if (estacionesSismologicas == null) {
+            estacionesSismologicas = new ArrayList<>();
+        }
+        return estacionesSismologicas;
     }
 }
 
