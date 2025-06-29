@@ -33,13 +33,11 @@ public class SerieTemporalService {
     public SerieTemporal getById(Long idSerie) {
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
-
-    public String obtenerEstacionesSismologicas(SerieTemporal serie) {
-        return sismografoService.esSismografo(serie.getEstacionSismologica());
-    }
-    
-    //listar estacion sismologica en las que pertenece la serie temporal
-    public List<SerieTemporal> listarEstacionesSismologicas(SerieTemporal serie) {
+    // Este método obtiene las estaciones sismológicas asociadas a una serie temporal
+    public List<SerieTemporal> obtenerEstacionesSismologicas(SerieTemporal serie) {
         return repo.findByEstacionSismologica(serie.getEstacionSismologica());
     }
+    
+    
+   
 }
