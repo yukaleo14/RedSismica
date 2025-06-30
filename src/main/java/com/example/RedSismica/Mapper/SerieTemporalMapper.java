@@ -51,6 +51,14 @@ public class SerieTemporalMapper {
             dto.setMuestrasSismicas(List.of()); // Asegura que la lista no sea null
         }
 
+       /*  if (entity.getEstacionesSismologicas() != null && !entity.getEstacionesSismologicas().isEmpty()) {
+            dto.setEstaciones(
+                entity.getEstacionesSismologicas().stream()
+                    .map(this::toEstacionDTO)
+                    .collect(Collectors.toList())
+            );
+        } */
+
         return dto;
     }
 
@@ -69,8 +77,35 @@ public class SerieTemporalMapper {
         //entity.setEstacionSismologica(toEstacionEntity(dto.getEstacionSismologica()));
         //entity.setMuestraSismica(List.of(muestraSismicaMapper.toEntity(dto.getMuestraSismica())));
 
+        /* if (dto.getEstaciones() != null && !dto.getEstaciones().isEmpty()) {
+            entity.setEstacionesSismologicas(
+                dto.getEstaciones().stream()
+                    .map(this::toEstacionEntity)
+                    .collect(Collectors.toList())
+            );
+        } */
+
         return entity;
     }
+
+  /*   private EstacionSismologicaDTO toEstacionDTO(EstacionSismologica entity) {
+        if (entity == null)
+            return null;
+        EstacionSismologicaDTO dto = new EstacionSismologicaDTO();
+        dto.setId(entity.getId());
+        dto.setNombre(entity.getNombre()); // si tiene
+        return dto;
+    }
+
+    private EstacionSismologica toEstacionEntity(EstacionSismologicaDTO dto) {
+        if (dto == null)
+            return null;
+        EstacionSismologica entity = new EstacionSismologica();
+        entity.setId(dto.getId());
+        entity.setNombre(dto.getNombre()); // si tiene
+        return entity;
+    } */
+    
 
     /*private EventoSismicoDTO toEventoDTO(EventoSismico entity) {
         if (entity == null)
@@ -88,21 +123,5 @@ public class SerieTemporalMapper {
         return entity;
     }
 
-    private EstacionSismologicaDTO toEstacionDTO(EstacionSismologica entity) {
-        if (entity == null)
-            return null;
-        EstacionSismologicaDTO dto = new EstacionSismologicaDTO();
-        dto.setId(entity.getId());
-        dto.setNombre(entity.getNombre()); // si tiene
-        return dto;
-    }
-
-    private EstacionSismologica toEstacionEntity(EstacionSismologicaDTO dto) {
-        if (dto == null)
-            return null;
-        EstacionSismologica entity = new EstacionSismologica();
-        entity.setId(dto.getId());
-        entity.setNombre(dto.getNombre()); // si tiene
-        return entity;*/
-    //}
+    */
 }
