@@ -103,8 +103,8 @@ public class EventoSismicoService {
        return evento.getAlcance();
     }
 
-    public String getOrigenGeneracion(EventoSismico evento) {
-        return evento.getOrigenGeneracion();
+    public String getOrigen(EventoSismico evento) {
+        return evento.getOrigen(); //estaba mal escrito, antes estaba getOrigenGeneracion y en la secuencia getOrigen
     }
 
 
