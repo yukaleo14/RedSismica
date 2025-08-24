@@ -12,6 +12,8 @@ public class TipoDeDatoService {
      @Autowired
     private TipoDeDatoRepository tipoDeDatoRepository;
 
+    // Metodo nro 44 --------------------------------------------------------------------------------------------------
+    // Metodo que verificara la denominacion del tipo de dato del evento sismico
     public String esTuDenominacion(Long id, String denominacion) {
         TipoDeDato tipoDeDato = tipoDeDatoRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("TipoDeDato no encontrado"));
@@ -22,6 +24,8 @@ public class TipoDeDatoService {
         }
     }
 
+    // Metodo nro 45 --------------------------------------------------------------------------------------------------
+    // Metodo que obtendra la denominacion del tipo de dato del evento sismico seleccionado
     public String getDenominacion(Long id) {
         TipoDeDato tipoDeDato = tipoDeDatoRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("TipoDeDato no encontrado"));

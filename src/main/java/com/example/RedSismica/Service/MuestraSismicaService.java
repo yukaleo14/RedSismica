@@ -21,6 +21,8 @@ public class MuestraSismicaService {
         return repo.findBySerieTemporal(serie);
     }
 
+    // Metodo nro 42 --------------------------------------------------------------------------------------------------
+    // Metodo que obtendra los datos de la muestra sismica del evento sismico seleccionado y lo buscara en el detalle de la muestra sismica
    public void getDatos(TipoDeDatoService tipoDeDatoService, Long id, String nombre) {
         detalleMuestraSismicaService.getDatos(tipoDeDatoService, id, nombre);
     }

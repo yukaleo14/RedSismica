@@ -33,4 +33,14 @@ public class EstacionSismologica {
     @JoinColumn(name = "evento_sismico_id")
     private EventoSismico eventoSismico;
 
+
+    // Metodo nro 48 y 49 --------------------------------------------------------------------------------------------------
+    // Metodo que obtendra los datos del sismografo
+    public String getNombre() {
+        return nombre;
+    }
+    public Long getCodigoEstacion() {
+        return codigoEstacion;
+    }
+
 }

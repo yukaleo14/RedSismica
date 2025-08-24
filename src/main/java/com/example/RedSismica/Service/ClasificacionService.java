@@ -15,6 +15,8 @@ public class ClasificacionService {
         return repo.save(clasificacion);
     }
 
+    // Metodo nro 39 --------------------------------------------------------------------------------------------------
+    // Metodo que obtendra el nombre de la clasificacion del evento sismico seleccionado
     public String getNombre(Clasificacion clasificacion) {
         return clasificacion.getNombre();
     }

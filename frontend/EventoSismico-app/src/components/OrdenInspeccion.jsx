@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 function OrdenInspeccion() {
   const navigate = useNavigate();
 
+  //Metodo nro 1
+  // Metodo para navegar a la página de registrar resultado de revisión de evento sísmico
   const opcionRegistrarResultRevEventoSismico = () => {
     navigate('/Ordencontrol');
   };

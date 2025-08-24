@@ -4,6 +4,7 @@ import OrdenInspeccion from './components/OrdenInspeccion';
 import OrdenControl from './components/OrdenControl';
 import Register from './components/Register';
 
+// Clase de nuestro analisis que representara el Boundary de nuestro sistema, la cual contendra las rutas de navegacion entre las distintas paginas
 function App() {
   return (
     <Router>

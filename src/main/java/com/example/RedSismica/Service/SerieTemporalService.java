@@ -19,25 +19,23 @@ public class SerieTemporalService {
     @Autowired
     TipoDeDatoService tipoDeDatoService;
 
-    @Autowired
-    private SismografoService sismografoService;
-
     public List<SerieTemporal> obtenerSeries(EventoSismico evento) {
         return repo.findByEvento(evento);
     }
+
+    // Metodo nro 41 --------------------------------------------------------------------------------------------------
+    // Metodo que obtendra las muestras de la serie temporal del evento sismico seleccionado
     public void getMuestras(Long id, String valor) {
        muestraSismicaService.getDatos(tipoDeDatoService, id, valor);
     }
 
+    // Metodo nro 46
+   // Este método obtiene las estaciones sismológicas asociadas a una serie temporal
+    public List<SerieTemporal> obtenerEstacionesSismologicas(SerieTemporal serie) {
+        return repo.findByEstacionSismologica(serie.getEstacionSismologica());
+    }
 
     public SerieTemporal getById(Long idSerie) {
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
-    // Este método obtiene las estaciones sismológicas asociadas a una serie temporal
-    public List<SerieTemporal> obtenerEstacionesSismologicas(SerieTemporal serie) {
-        return repo.findByEstacionSismologica(serie.getEstacionSismologica());
-    }
-    
-    
-   
 }

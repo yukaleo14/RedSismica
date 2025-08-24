@@ -18,6 +18,8 @@ public class DetalleMuestraSismicaService {
         return repo.findByMuestraSismica(muestra);
     }
 
+    // Metodo nro 43 --------------------------------------------------------------------------------------------------
+    // Metodo que obtendra los datos de la muestra sismica del evento sismico seleccionado y llamara al tipo de dato
     public String getDatos(TipoDeDatoService tipoDeDatoService, Long id, String denominacion) {
     return tipoDeDatoService.esTuDenominacion(id, denominacion) + " - " + tipoDeDatoService.getDenominacion(id);
     }

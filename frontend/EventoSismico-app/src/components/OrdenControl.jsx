@@ -67,6 +67,8 @@ function OrdenControl() {
       return;
     }
 
+    // Metodo nro 17 --------------------------------------------------------------------------------------------------
+    // Metodo para mostrar los eventos sísmicos pendientes ordenados por fecha y hora de ocurrencia descendente, solicitados por el Gestor de Eventos Sísmicos
     const mostrarEventosSismicoParaSelecc = async () => {
       try {
         const res = await axios.get('/api/eventos/pendientes', {
@@ -111,6 +113,8 @@ function OrdenControl() {
     const token = localStorage.getItem('token');
     console.log('Fetching details for evento ID:', selectedEvento.id);
 
+    // Metodo nro 18 --------------------------------------------------------------------------------------------------
+    // Metodo para tomar la selección del evento sísmico y enviar la misma al Gestor de Eventos Sísmicos
     const tomarSeleccEventoSismico = async () => {
       try {
         const response = await axios.get(`/api/eventos/${selectedEvento.id}`, {
@@ -168,6 +172,8 @@ function OrdenControl() {
     fetchSeriesTemporales();
   }, [selectedEvento, navigate, eventos]);
 
+  // Metodo nro 53 --------------------------------------------------------------------------------------------------
+  // Metodo para solicitar la selección de la acción a realizar sobre el evento sísmico seleccionado al Usuraio
   const solicitarSeleccionAccion = () => {
     setConfirmedEvento(selectedEvento);
     setEstadoSismografo('Bloqueado En Revision');
@@ -176,7 +182,6 @@ function OrdenControl() {
         evento.id === selectedEvento.id ? { ...evento, estadoEventoId: 3 } : evento
       )
     );
-    // Aquí podrías agregar una llamada a la API para actualizar el estado
   };
 
   const handleFinalAction = (newState) => {
@@ -188,9 +193,10 @@ function OrdenControl() {
         evento.id === selectedEvento.id ? { ...evento, estadoEventoId: estadoMap[newState] } : evento
       )
     );
-    // Aquí podrías agregar una llamada a la API para guardar el estado final
   };
 
+  // Metodo nro 54 --------------------------------------------------------------------------------------------------
+  // Metodo para tomar la selección de rechazar el evento sísmico y enviar la misma al Gestor de Eventos Sísmicos
   const tomarSeleccionarRechazarEvento = () => {
     const revisionData = {
       responsable: username,
