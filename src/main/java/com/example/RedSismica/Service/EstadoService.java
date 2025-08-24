@@ -10,28 +10,35 @@ import com.example.RedSismica.Model.EventoSismico;
 import com.example.RedSismica.Repository.EventoSismicoRepository;
 
 @Service
-public class EstadoEventoService {
+public class EstadoService {
 
     @Autowired private EventoSismicoRepository repo;
 
-    public boolean esBloqueadoEnRevision(EstadoEvento estado) {
-        return estado.esBloqueadoEnRevision();
-    }
-
+    // Metodo nro 6 --------------------------------------------------------------------------------------------------
+    // Metodo que obtiene los estados "AutoDetectado" de las entidades EventoSismico
     public List<EventoSismico> esAutoDetectado() {
         return repo.findByAutoDetectadoTrue();
     }
 
+    // Metodo nro 8 --------------------------------------------------------------------------------------------------
+    // Metodo que obtiene los estados "PendienteRevision" de las entidades EventoSismico
     public List<EventoSismico> esPendienteRevision() {
         return repo.findByPendienteRevisionTrue();
     }
 
+    // Metodo nro 21 --------------------------------------------------------------------------------------------------
+    // Metodo que verifica si el ambito del estado es "EventoSismico"
     public boolean esAmbitoEventoSismico(EstadoEvento estado) {
         if (estado.getAmbito().equals("EventoSismico")) {
             return true;
         } else {
             return false;
         }
+    }
+    // Metodo nro 22 --------------------------------------------------------------------------------------------------
+    // Metodo que verifica si el estado es "BloqueadoEnRevision"
+    public boolean esBloqueadoEnRevision(EstadoEvento estado) {
+        return estado.esBloqueadoEnRevision();
     }
 
     public String setEstado(EstadoEvento estado) {
