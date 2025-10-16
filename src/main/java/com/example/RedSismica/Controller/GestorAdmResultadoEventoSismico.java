@@ -133,6 +133,7 @@ public class GestorAdmResultadoEventoSismico {
 
     // Metodo nro 25 --------------------------------------------------------------------------------------------------
     // Metodo que bloquea el evento y llama al metodo revisar para iniciar el proceso de revisión
+    @PostMapping("/{eventoId}/bloquear-revisar")
     public EventoSismico bloquearEvento(Long eventoId, Usuario usuarioQueSelecciona, ResultadoRevisionDTO datosInicialesRevision) {
         // --- Paso 1: Bloquear el Evento (para que nadie más lo revise) ---
         EventoSismico evento = repo.findById(eventoId)
@@ -225,7 +226,7 @@ public class GestorAdmResultadoEventoSismico {
 
     // Metodo nro 60 --------------------------------------------------------------------------------------------------
     // Metodo que inicializara el proceso de rechazo del evento sismico seleccionado y llamara al metodo rechazar
-     @PutMapping("/{id}")
+     @PutMapping("/{id}/rechazar")
     public ResponseEntity<EventoSismico> cambiarEstadoEventoSismico(
             @PathVariable Long id,
             @RequestBody EventoSismicoDTO eventoDto) {
