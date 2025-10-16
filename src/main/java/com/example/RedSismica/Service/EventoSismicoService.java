@@ -157,12 +157,12 @@ public class EventoSismicoService {
         if (cambioActual != null) {
             cambioEstadoService.finalizarCambio(cambioActual);
         }
-        CambioEstado nuevoCambio = new CambioEstado();
-        nuevoCambio.setEventoSismico(evento);
-        nuevoCambio.setFechaHoraInicio(LocalDateTime.now());
-        nuevoCambio.setEstadoEvento(estadoEventoService.getById(eventoId));
+        CambioEstado actualCambioEstado = new CambioEstado();
+        actualCambioEstado.setEventoSismico(evento);
+        actualCambioEstado.setFechaHoraInicio(LocalDateTime.now());
+        actualCambioEstado.setEstadoEvento(estadoEventoService.getById(eventoId));
 
-        cambioEstadoService.crearCambioEstado(nuevoCambio);
+        cambioEstadoService.crearCambioEstado(actualCambioEstado);
 
         return repo.save(evento);
     }
