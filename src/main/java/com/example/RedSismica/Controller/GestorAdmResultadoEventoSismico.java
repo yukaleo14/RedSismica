@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import com.example.RedSismica.DTO.EstacionSismologicaDTO;
 import com.example.RedSismica.DTO.EventoSismicoDTO;
 import com.example.RedSismica.DTO.MuestraSismicaDTO;
 import com.example.RedSismica.DTO.SerieTemporalDTO;
+import com.example.RedSismica.Iterator.IteradorEventoSismico;
 import com.example.RedSismica.Mapper.CambioEstadoMapper;
 import com.example.RedSismica.Mapper.ClasificacionMapper;
 import com.example.RedSismica.Mapper.EstacionSismologicaMapper;
@@ -48,6 +50,8 @@ import com.example.RedSismica.Service.SerieTemporalService;
 import com.example.RedSismica.Service.SesionService;
 import com.example.RedSismica.Service.SismogramaService;
 import com.example.RedSismica.Usuario.Usuario;
+import com.example.RedSismica.interfaces.IAgregado;
+import com.example.RedSismica.interfaces.IIterator;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +60,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/eventos")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
-public class GestorAdmResultadoEventoSismico {
+public class GestorAdmResultadoEventoSismico implements IAgregado {
 
     @Autowired
     private EventoSismicoRepository repo;
@@ -75,6 +79,7 @@ public class GestorAdmResultadoEventoSismico {
     private final EstacionSismologicaMapper estacionMapper;
     private final EventoSismicoRepository eventoSismicoRepository;
     private final SismogramaService sismogramaService;
+    private EventoSismico[] eventosNoRevisados;
 //----------------------------------------------------------------------------------------------------------------
 
     //Metodo nro 3 --------------------------------------------------------------------------------------------------
@@ -89,8 +94,11 @@ public class GestorAdmResultadoEventoSismico {
     @GetMapping("/pendientes")
     public ResponseEntity<List<EventoSismicoDTO>> buscarEventosSismicosAutoDetectado() {
         try {
-            List<EventoSismico> eventos = eventoService.buscarEventosSismicosAutoDetectado();
-            List<EventoSismicoDTO> dtoList = eventos.stream()
+            List<EventoSismico> eventosAD = eventoService.esAutoDetectado();
+            List<EventoSismico> eventosPR = eventoService.esPendienteRevision();
+            List<EventoSismico> eventosCombinados = Stream.concat(eventosAD.stream(), eventosPR.stream())
+                                            .collect(Collectors.toList());
+            List<EventoSismicoDTO> dtoList = eventosCombinados.stream()
                 .map(eventoMapper::toDTO)
                 .collect(Collectors.toList());
             return ResponseEntity.ok(dtoList);
@@ -98,6 +106,30 @@ public class GestorAdmResultadoEventoSismico {
             e.printStackTrace(); // Esto mostrará el error real en la consola
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @Override
+    public IIterator crearIterador(Object[] elementos) { 
+        return new IteradorEventoSismico(elementos); 
+    }
+
+    public void procesarEventosConIterador() {
+        this.buscarEventosSismicosAutoDetectado();
+        IIterator iterator = this.crearIterador(this.eventosNoRevisados);
+        iterator.primero();
+
+        Object[] filtros = new Object[] { "AUTODETECTADO", "PENDIENTE" };
+
+        while (!iterator.haTerminado()) {
+            EventoSismico evento = (EventoSismico) iterator.esActual();
+
+            if (iterator.cumpleFiltro(filtros)) {
+                evento.getDatosPrincipales();
+            }
+            
+            iterator.siguiente();
+        }
+        ordenarEventosPorFechaHora();
     }
 
     // Metodo nro 16 --------------------------------------------------------------------------------------------------
