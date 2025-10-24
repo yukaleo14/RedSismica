@@ -20,10 +20,10 @@ public class EventoSismicoService {
     @Autowired private EventoSismicoRepository repo;
     @Autowired private EstadoService estadoEventoService;
 
-    public List<EventoSismico> buscarEventosSismicosAutoDetectado() {
+    /* public List<EventoSismico> buscarEventosSismicosAutoDetectado() {
         return repo.findByAutoDetectadoTrueOrPendienteRevisionTrue();
     }
-
+ */
     // Metodo nro 5 --------------------------------------------------------------------------------------------------
     // Metodo para buscar el estado del evento en la entidad EstadoEventoService
     public List<EventoSismico> esAutoDetectado() {
