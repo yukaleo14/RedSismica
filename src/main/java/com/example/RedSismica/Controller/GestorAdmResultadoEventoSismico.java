@@ -2,6 +2,8 @@ package com.example.RedSismica.Controller;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -94,13 +96,37 @@ public class GestorAdmResultadoEventoSismico implements IAgregado {
     @GetMapping("/pendientes")
     public ResponseEntity<List<EventoSismicoDTO>> buscarEventosSismicosAutoDetectado() {
         try {
-            List<EventoSismico> eventosAD = eventoService.esAutoDetectado();
-            List<EventoSismico> eventosPR = eventoService.esPendienteRevision();
-            List<EventoSismico> eventosCombinados = Stream.concat(eventosAD.stream(), eventosPR.stream())
-                                            .collect(Collectors.toList());
-            List<EventoSismicoDTO> dtoList = eventosCombinados.stream()
+            IIterator iterator = this.crearIterador(this.eventosNoRevisados);
+            iterator.primero();
+            ArrayList<Double> listaEventos = new ArrayList<>();
+
+            Object[] filtros = new Object[] { "AutoDetectado", "Pendiente" };
+            while (!iterator.haTerminado()) {
+            EventoSismico evento = (EventoSismico) iterator.esActual();
+
+            if (iterator.cumpleFiltro(filtros)) {
+                listaEventos.add(evento.getDatosPrincipales());
+            }
+            
+            iterator.siguiente();
+            }
+
+            // SOLUCIONAR ERROR, PARA MOSTRAR LA LISTA COMPLETA DE EVENTOS CON SUS DATOS
+            List<EventoSismicoDTO> dtoList = listaEventos.stream()
                 .map(eventoMapper::toDTO)
                 .collect(Collectors.toList());
+            
+            List<EventoSismico> eventosAD = eventoService.esAutoDetectado();
+            List<EventoSismico> eventosPR = eventoService.esPendienteRevision();
+
+            List<EventoSismico> eventosCombinados = Stream.concat(eventosAD.stream(), eventosPR.stream())
+                    .sorted(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia).reversed())
+                    .collect(Collectors.toList());
+/* 
+            List<EventoSismicoDTO> dtoList = eventosCombinados.stream()
+                .map(eventoMapper::toDTO)
+                .collect(Collectors.toList()); */
+
             return ResponseEntity.ok(dtoList);
         } catch (Exception e) {
             e.printStackTrace(); // Esto mostrará el error real en la consola
@@ -129,7 +155,6 @@ public class GestorAdmResultadoEventoSismico implements IAgregado {
             
             iterator.siguiente();
         }
-        ordenarEventosPorFechaHora();
     }
 
     // Metodo nro 16 --------------------------------------------------------------------------------------------------

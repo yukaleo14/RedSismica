@@ -36,18 +36,13 @@ public class IteradorEventoSismico implements IIterator {
     }
 
     @Override
-    // Este método implementa la lógica de filtrado del diagrama de secuencia [cite: 19, 58]
     public boolean cumpleFiltro(Object[] filtros) {
-        // Los "filtros" podrían usarse para más criterios, pero 
-        // el diagrama de secuencia solo muestra estas dos validaciones.
-        
         if (haTerminado()) {
             return false;
         }
-
         EventoSismico eventoActual = elementos[actual];
+       
         
-        // El iterador llama a los métodos del evento 
         boolean autoDetectado = eventoActual.esAutoDetectado();
         boolean pendienteRevision = eventoActual.esPendienteRevision();
         
