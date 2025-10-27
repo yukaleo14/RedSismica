@@ -77,8 +77,8 @@ public class EventoSismico {
         throw new UnsupportedOperationException("Unimplemented method 'bloquear'");
     }
 
-    public String getDatosPrincipales() {
-        return "Obteniendo datos principales del evento sismico: ";
+    public Double getDatosPrincipales() {
+        return this.latitudEpicentro + this.longitudEpicentro + this.latitudHipocentro + this.longitudHipocentro +this.magnitud; 
     }
 
     public String getOrigen() {
