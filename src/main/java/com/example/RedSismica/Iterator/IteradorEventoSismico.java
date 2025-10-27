@@ -16,7 +16,7 @@ public class IteradorEventoSismico implements IIterator {
     }
 
     @Override
-    public Object esActual() { // 
+    public Object actual() { // 
         return elementos[actual];
     }
 

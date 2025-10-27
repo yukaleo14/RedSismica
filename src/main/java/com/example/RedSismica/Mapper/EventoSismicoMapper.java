@@ -41,7 +41,7 @@ public class EventoSismicoMapper {
         dto.setPendienteRevision(entity.getPendienteRevision());
         // AÑADIR estas líneas para mapear los campos de revisión al DTO
         dto.setResponsableRevision(entity.getResponsableRevision());
-        dto.setFechaHoraRevision(entity.getFechaHoraRevision()); // Asumiendo que ahora existe este getter en el Model
+        dto.setFechaHoraRevision(entity.getFechaHoraRevision()); // Asumiendo que ahora existe este getter en el Modelo
 
         if (entity.getEstadoEvento() != null) {
             dto.setEstadoEventoId(entity.getEstadoEvento().getId());

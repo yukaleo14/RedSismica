@@ -1,7 +1,7 @@
 package com.example.RedSismica.interfaces;
 
 public interface IIterator {
-    Object esActual(); 
+    Object actual(); 
     boolean haTerminado(); 
     void primero(); 
     void siguiente(); 

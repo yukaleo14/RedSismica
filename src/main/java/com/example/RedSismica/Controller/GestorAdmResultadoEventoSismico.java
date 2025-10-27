@@ -91,37 +91,39 @@ public class GestorAdmResultadoEventoSismico implements IAgregado {
         return "Opción para registrar resultados de revisión de eventos sísmicos";
     }
 
-    //Metodo nro 4 --------------------------------------------------------------------------------------------------
+    //Metodo nro 4 -------------------------------------------------------------------------------------------------- INICIO PATRON ITERADOR
     // Metodo de inicializacion para buscar eventos sísmicos autodectados o pendientes de revisión
     @GetMapping("/pendientes")
     public ResponseEntity<List<EventoSismicoDTO>> buscarEventosSismicosAutoDetectado() {
         try {
             IIterator iterator = this.crearIterador(this.eventosNoRevisados);
             iterator.primero();
-            ArrayList<Double> listaEventos = new ArrayList<>();
+            ArrayList<EventoSismico> listaEventos = new ArrayList<>(); //Almacena el evento completo
+            ArrayList <Double> datosPrincipales = new ArrayList<>(); //Almacena solo los datos principales
 
             Object[] filtros = new Object[] { "AutoDetectado", "Pendiente" };
             while (!iterator.haTerminado()) {
-            EventoSismico evento = (EventoSismico) iterator.esActual();
+            EventoSismico evento = (EventoSismico) iterator.actual();
 
             if (iterator.cumpleFiltro(filtros)) {
-                listaEventos.add(evento.getDatosPrincipales());
+                listaEventos.add(evento); // Almacena el evento completo
+                datosPrincipales.add(evento.getDatosPrincipales()); // Almacena solo los datos principales
             }
             
             iterator.siguiente();
             }
 
-            // SOLUCIONAR ERROR, PARA MOSTRAR LA LISTA COMPLETA DE EVENTOS CON SUS DATOS
+            // Mapeo a DTO y ordenamiento por fecha y hora de ocurrencia descendente después del cambio
             List<EventoSismicoDTO> dtoList = listaEventos.stream()
-                .map(eventoMapper::toDTO)
-                .collect(Collectors.toList());
-            
-            List<EventoSismico> eventosAD = eventoService.esAutoDetectado();
-            List<EventoSismico> eventosPR = eventoService.esPendienteRevision();
+            .sorted(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia).reversed())    
+            .map(eventoMapper::toDTO)
+            .collect(Collectors.toList());
 
-            List<EventoSismico> eventosCombinados = Stream.concat(eventosAD.stream(), eventosPR.stream())
-                    .sorted(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia).reversed())
-                    .collect(Collectors.toList());
+            // Mapeo a DTO y ordenamiento por fecha y hora de ocurrencia descendente antes del cambio
+            /*List<EventoSismicoDTO> dtoList = listaEventos.stream()
+                .sorted(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia).reversed())
+                .map(eventoMapper::toDTO)
+                .collect(Collectors.toList());*/
 /* 
             List<EventoSismicoDTO> dtoList = eventosCombinados.stream()
                 .map(eventoMapper::toDTO)
@@ -138,25 +140,8 @@ public class GestorAdmResultadoEventoSismico implements IAgregado {
     public IIterator crearIterador(Object[] elementos) { 
         return new IteradorEventoSismico(elementos); 
     }
-
-    public void procesarEventosConIterador() {
-        this.buscarEventosSismicosAutoDetectado();
-        IIterator iterator = this.crearIterador(this.eventosNoRevisados);
-        iterator.primero();
-
-        Object[] filtros = new Object[] { "AUTODETECTADO", "PENDIENTE" };
-
-        while (!iterator.haTerminado()) {
-            EventoSismico evento = (EventoSismico) iterator.esActual();
-
-            if (iterator.cumpleFiltro(filtros)) {
-                evento.getDatosPrincipales();
-            }
-            
-            iterator.siguiente();
-        }
-    }
-
+    //FIN PATRON ITERADOR --------------------------------------------------------------------------------------------
+    
     // Metodo nro 16 --------------------------------------------------------------------------------------------------
     // Metodo para ordenar los eventos sísmicos por fecha y hora de ocurrencia descendente
     public  List<EventoSismico> ordenarEventosPorFechaHora() {
