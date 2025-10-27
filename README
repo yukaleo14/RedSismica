@@ -1,0 +1,19 @@
+COMANDOS PARA EJECUTAR EL PROYECTO
+BACKEND
+Primera vez que ejecutas el proyecto
+    $ mvn install
+
+Para correr el proyecto
+    $ mvn spring-boot:run
+
+
+FRONTEND
+moverse a la carpeta
+    $ cd .\frontend\EventoSismico-app\
+
+Primera vez que ejecutas el proyecto
+    $ npm install
+
+Para correr el proyecto
+    $ npm run start
+
