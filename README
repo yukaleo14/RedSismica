@@ -17,3 +17,6 @@ Primera vez que ejecutas el proyecto
 Para correr el proyecto
     $ npm run start
 
+Entrar a la Base de datos
+psql -h localhost -p 5432 -U postgres -d redsismica
+(ingresar su contraseña)
