@@ -3,6 +3,7 @@ package com.example.RedSismica.Controller;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.yaml.snakeyaml.events.Event;
 
 import com.example.RedSismica.DTO.CambioEstadoDTO;
 import com.example.RedSismica.DTO.ClasificacionDTO;
@@ -81,7 +83,6 @@ public class GestorAdmResultadoEventoSismico implements IAgregado {
     private final EstacionSismologicaMapper estacionMapper;
     private final EventoSismicoRepository eventoSismicoRepository;
     private final SismogramaService sismogramaService;
-    private EventoSismico[] eventosNoRevisados;
 //----------------------------------------------------------------------------------------------------------------
 
     //Metodo nro 3 --------------------------------------------------------------------------------------------------
@@ -96,20 +97,18 @@ public class GestorAdmResultadoEventoSismico implements IAgregado {
     @GetMapping("/pendientes")
     public ResponseEntity<List<EventoSismicoDTO>> buscarEventosSismicosAutoDetectado() {
         try {
-            IIterator iterator = this.crearIterador(this.eventosNoRevisados);
+            List<EventoSismico> allEvents = eventoSismicoRepository.findAll();
+            IIterator iterator = this.crearIterador(allEvents.toArray(new EventoSismico[0]));
             iterator.primero();
-            ArrayList<EventoSismico> listaEventos = new ArrayList<>(); //Almacena el evento completo
-            ArrayList <Double> datosPrincipales = new ArrayList<>(); //Almacena solo los datos principales
+            List<EventoSismico> listaEventos = new ArrayList<>(); //Almacena el evento completo
 
             Object[] filtros = new Object[] { "AutoDetectado", "Pendiente" };
+
             while (!iterator.haTerminado()) {
             EventoSismico evento = (EventoSismico) iterator.actual();
-
             if (iterator.cumpleFiltro(filtros)) {
                 listaEventos.add(evento); // Almacena el evento completo
-                datosPrincipales.add(evento.getDatosPrincipales()); // Almacena solo los datos principales
             }
-            
             iterator.siguiente();
             }
 
@@ -118,16 +117,6 @@ public class GestorAdmResultadoEventoSismico implements IAgregado {
             .sorted(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia).reversed())    
             .map(eventoMapper::toDTO)
             .collect(Collectors.toList());
-
-            // Mapeo a DTO y ordenamiento por fecha y hora de ocurrencia descendente antes del cambio
-            /*List<EventoSismicoDTO> dtoList = listaEventos.stream()
-                .sorted(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia).reversed())
-                .map(eventoMapper::toDTO)
-                .collect(Collectors.toList());*/
-/* 
-            List<EventoSismicoDTO> dtoList = eventosCombinados.stream()
-                .map(eventoMapper::toDTO)
-                .collect(Collectors.toList()); */
 
             return ResponseEntity.ok(dtoList);
         } catch (Exception e) {
